@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bargin Calculator with Live and Manual Currency Converter</title>
+    <title>Margin Calculator with Live and Manual Currency Converter</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" type="image/png">
     <style>
         @keyframes fadeIn {
@@ -52,7 +52,7 @@
             color: #555;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -82,7 +82,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Margin 1 Calculator with Live and Manual Currency Converter</h1>
+        <h1>Margin Calculator with Live and Manual Currency Converter</h1>
 
         <div class="form-group">
             <label for="cost">Cost (in CAD):</label>
@@ -129,9 +129,7 @@
         async function fetchExchangeRate() {
             try {
                 const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch exchange rate');
-                }
+                if (!response.ok) throw new Error('Failed to fetch exchange rate');
                 const data = await response.json();
                 const exchangeRate = data.rates.USD;
                 document.getElementById('exchange-rate').value = exchangeRate.toFixed(4);
@@ -142,14 +140,18 @@
             }
         }
 
+        function getExchangeRate() {
+            const mode = document.getElementById('exchange-rate-mode').value;
+            const manual = parseFloat(document.getElementById('manual-exchange-rate').value);
+            const live = parseFloat(document.getElementById('exchange-rate').value);
+            return mode === 'manual' ? manual : live;
+        }
+
         function calculateAutomatically() {
             const cost = parseFloat(document.getElementById('cost').value);
             const margin = parseFloat(document.getElementById('margin').value);
             const revenue = parseFloat(document.getElementById('revenue').value);
-            const exchangeRateMode = document.getElementById('exchange-rate-mode').value;
-            const manualExchangeRate = parseFloat(document.getElementById('manual-exchange-rate').value);
-            const liveExchangeRate = parseFloat(document.getElementById('exchange-rate').value);
-            const exchangeRate = exchangeRateMode === 'manual' ? manualExchangeRate : liveExchangeRate;
+            const exchangeRate = getExchangeRate();
 
             if (!isNaN(cost)) {
                 if (!isNaN(margin) && document.activeElement.id === 'margin') {
@@ -162,15 +164,11 @@
                     const profit = revenue - cost;
                     document.getElementById('margin').value = calculatedMargin.toFixed(2);
                     document.getElementById('result').innerText = `Margin: ${calculatedMargin.toFixed(2)}%, Profit: $${profit.toFixed(2)} CAD`;
-                } else if (!isNaN(margin) && !isNaN(revenue)) {
-                    const profit = revenue - cost;
-                    document.getElementById('result').innerText = `Profit: $${profit.toFixed(2)} CAD`;
-                } else {
-                    document.getElementById('result').innerText = '';
                 }
 
-                if (!isNaN(revenue) && !isNaN(exchangeRate)) {
-                    const revenueInUSD = revenue / exchangeRate;
+                const calculatedRevenue = !isNaN(margin) ? cost / (1 - margin / 100) : revenue;
+                if (!isNaN(calculatedRevenue) && !isNaN(exchangeRate)) {
+                    const revenueInUSD = calculatedRevenue / exchangeRate;
                     document.getElementById('revenue-usd').value = revenueInUSD.toFixed(2);
                 }
             } else {
@@ -181,19 +179,16 @@
         function calculateFromUSD() {
             const cost = parseFloat(document.getElementById('cost').value);
             const revenueUSD = parseFloat(document.getElementById('revenue-usd').value);
-            const exchangeRateMode = document.getElementById('exchange-rate-mode').value;
-            const manualExchangeRate = parseFloat(document.getElementById('manual-exchange-rate').value);
-            const liveExchangeRate = parseFloat(document.getElementById('exchange-rate').value);
-            const exchangeRate = exchangeRateMode === 'manual' ? manualExchangeRate : liveExchangeRate;
+            const exchangeRate = getExchangeRate();
 
             if (!isNaN(revenueUSD) && !isNaN(exchangeRate)) {
-                const revenueCAD = revenueUSD / exchangeRate;
+                const revenueCAD = revenueUSD * exchangeRate;
                 document.getElementById('revenue').value = revenueCAD.toFixed(2);
 
                 if (!isNaN(cost)) {
                     const calculatedMargin = ((revenueCAD - cost) / revenueCAD) * 100;
                     const profitCAD = revenueCAD - cost;
-                    const profitUSD = profitCAD * exchangeRate;
+                    const profitUSD = profitCAD / exchangeRate;
                     document.getElementById('margin').value = calculatedMargin.toFixed(2);
                     document.getElementById('result').innerText = `Margin: ${calculatedMargin.toFixed(2)}%, Profit: $${profitCAD.toFixed(2)} CAD ($${profitUSD.toFixed(2)} USD)`;
                 } else {

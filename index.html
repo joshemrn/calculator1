@@ -170,7 +170,7 @@
                 }
 
                 if (!isNaN(revenue) && !isNaN(exchangeRate)) {
-                    const revenueInUSD = revenue * exchangeRate;
+                    const revenueInUSD = revenue / exchangeRate;
                     document.getElementById('revenue-usd').value = revenueInUSD.toFixed(2);
                 }
             } else {

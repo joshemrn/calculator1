@@ -31,6 +31,7 @@
             <div class="flex space-x-6">
                 <button id="reset-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition text-lg">Reset</button>
                 <button id="toggle-summary" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Hide Summary</button>
+                <button id="toggle-history" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Show History</button>
             </div>
             <div id="summary-section" class="mt-8 p-6 bg-indigo-50 rounded-lg">
                 <h2 class="text-xl font-semibold text-indigo-700 mb-3">Summary</h2>
@@ -39,7 +40,7 @@
                 <p class="text-base text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
                 <p class="text-base text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
             </div>
-            <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+            <div id="history-section" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
                 <h2 class="text-xl font-semibold text-gray-700 mb-3">Calculation History</h2>
                 <ul id="history-list" class="text-base text-gray-600 space-y-3 max-h-48 overflow-y-auto"></ul>
             </div>
@@ -57,7 +58,9 @@
         const summaryUsd = document.getElementById('summary-usd');
         const resetBtn = document.getElementById('reset-btn');
         const toggleSummaryBtn = document.getElementById('toggle-summary');
+        const toggleHistoryBtn = document.getElementById('toggle-history');
         const summarySection = document.getElementById('summary-section');
+        const historySection = document.getElementById('history-section');
         const historyList = document.getElementById('history-list');
         const costError = document.getElementById('cost-error');
         const marginError = document.getElementById('margin-error');
@@ -244,6 +247,12 @@
         toggleSummaryBtn.addEventListener('click', () => {
             summarySection.classList.toggle('hidden');
             toggleSummaryBtn.textContent = summarySection.classList.contains('hidden') ? 'Show Summary' : 'Hide Summary';
+        });
+
+        // Toggle history visibility
+        toggleHistoryBtn.addEventListener('click', () => {
+            historySection.classList.toggle('hidden');
+            toggleHistoryBtn.textContent = historySection.classList.contains('hidden') ? 'Show History' : 'Hide History';
         });
 
         // Fetch exchange rate and load saved values on load

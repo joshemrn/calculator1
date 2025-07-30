@@ -5,44 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center min-h-screen py-8">
-    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all hover:scale-105">
-        <img src="https://cdn11.bigcommerce.com/s-rntzxs90f5/images/stencil/250x83/good_logo_1672955118__87815.original.jpg" alt="Logo" class="mx-auto mb-4 w-40">
-        <h1 class="text-3xl font-extrabold mb-6 text-center text-indigo-700">Margin Calculator</h1>
-        <div class="space-y-6">
+<body class="bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center min-h-screen py-12">
+    <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105">
+        <img src="https://cdn11.bigcommerce.com/s-rntzxs90f5/images/stencil/250x83/good_logo_1672955118__87815.original.jpg" alt="Logo" class="mx-auto mb-6 w-48">
+        <div class="space-y-8">
             <div>
-                <label for="cost" class="block text-sm font-medium text-gray-800">Cost (CAD)</label>
-                <input type="number" id="cost" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-3 bg-gray-50 text-gray-900 placeholder-gray-400" placeholder="Enter cost">
-                <p id="cost-error" class="text-red-500 text-xs mt-1 hidden">Cost must be non-negative.</p>
-            </div>
-            <div>
-                <label for="margin" class="block text-sm font-medium text-gray-800">Margin (%)</label>
-                <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-3 bg-gray-50 text-gray-900 placeholder-gray-400" placeholder="Enter margin percentage">
-                <p id="margin-error" class="text-red-500 text-xs mt-1 hidden">Margin must be between 0 and 99.99%.</p>
+                <label for="cost" class="block text-base font-medium text-gray-800">Cost (CAD)</label>
+                <input type="number" id="cost" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter cost">
+                <p id="cost-error" class="text-red-500 text-sm mt-2 hidden">Cost must be non-negative.</p>
             </div>
             <div>
-                <label for="revenue" class="block text-sm font-medium text-gray-800">Revenue (CAD)</label>
-                <input type="number" id="revenue" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-3 bg-gray-50 text-gray-900 placeholder-gray-400" placeholder="Enter revenue">
-                <p id="revenue-error" class="text-red-500 text-xs mt-1 hidden">Revenue must be non-negative.</p>
+                <label for="margin" class="block text-base font-medium text-gray-800">Margin (%)</label>
+                <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter margin percentage">
+                <p id="margin-error" class="text-red-500 text-sm mt-2 hidden">Margin must be between 0 and 99.99%.</p>
             </div>
-            <div class="mt-4">
-                <p class="text-sm font-medium text-gray-800">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600">0.00</span></p>
-                <p class="text-xs text-gray-500">Exchange rate updated live</p>
+            <div>
+                <label for="revenue" class="block text-base font-medium text-gray-800">Revenue (CAD)</label>
+                <input type="number" id="revenue" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter revenue">
+                <p id="revenue-error" class="text-red-500 text-sm mt-2 hidden">Revenue must be non-negative.</p>
             </div>
-            <div class="flex space-x-4">
-                <button id="reset-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Reset</button>
-                <button id="toggle-summary" class="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition">Hide Summary</button>
+            <div class="mt-6">
+                <p class="text-base font-medium text-gray-800">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600">0.00</span></p>
+                <p class="text-sm text-gray-500">Exchange rate updated live</p>
             </div>
-            <div id="summary-section" class="mt-6 p-4 bg-indigo-50 rounded-lg">
-                <h2 class="text-lg font-semibold text-indigo-700 mb-2">Summary</h2>
-                <p class="text-sm text-gray-700">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
-                <p class="text-sm text-gray-700">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
-                <p class="text-sm text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
-                <p class="text-sm text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
+            <div class="flex space-x-6">
+                <button id="reset-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition text-lg">Reset</button>
+                <button id="toggle-summary" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Hide Summary</button>
             </div>
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h2 class="text-lg font-semibold text-gray-700 mb-2">Calculation History</h2>
-                <ul id="history-list" class="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto"></ul>
+            <div id="summary-section" class="mt-8 p-6 bg-indigo-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-indigo-700 mb-3">Summary</h2>
+                <p class="text-base text-gray-700">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
+                <p class="text-base text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
+            </div>
+            <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3">Calculation History</h2>
+                <ul id="history-list" class="text-base text-gray-600 space-y-3 max-h-48 overflow-y-auto"></ul>
             </div>
         </div>
     </div>

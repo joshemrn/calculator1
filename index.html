@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ensure Tailwind dark mode works */
+        @media (prefers-color-scheme: dark) {
+            :root:not(.light) {
+                color-scheme: dark;
+            }
+        }
+        :root.light {
+            color-scheme: light;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-100 to-purple-100 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 flex items-center justify-center min-h-screen py-12 transition-colors duration-300">
     <div class="bg-white dark:bg-gray-800 p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105 relative">
         <div class="absolute top-4 right-4 flex items-center">
             <span class="text-sm text-gray-800 dark:text-gray-200 mr-2">Dark Mode</span>
             <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                <input type="checkbox" id="theme-toggle" class="sr-only peer" {{ localStorage.getItem('theme') === 'dark' ? 'checked' : '' }}>
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 dark:peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
         </div>
@@ -76,6 +87,23 @@
 
         let exchangeRate = 0.72; // Default CAD to USD rate
         let history = JSON.parse(localStorage.getItem('marginCalcHistory')) || [];
+
+        // Load saved theme and values from localStorage
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeToggle.checked = true;
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggle.checked = false;
+            }
+        }
+
+        // Save theme to localStorage
+        function saveTheme(isDark) {
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
 
         // Load saved values from localStorage
         function loadSavedValues() {
@@ -212,7 +240,13 @@
 
         // Toggle theme
         themeToggle.addEventListener('change', () => {
-            document.documentElement.classList.toggle('dark');
+            if (themeToggle.checked) {
+                document.documentElement.classList.add('dark');
+                saveTheme(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                saveTheme(false);
+            }
         });
 
         // Event listeners for input changes
@@ -268,9 +302,10 @@
             toggleHistoryBtn.textContent = historySection.classList.contains('hidden') ? 'Show History' : 'Hide History';
         });
 
-        // Fetch exchange rate and load saved values on load
+        // Fetch exchange rate and load saved values and theme on load
         fetchExchangeRate();
         loadSavedValues();
+        loadTheme();
         updateHistory();
     </script>
 </body>

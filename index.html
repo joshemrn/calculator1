@@ -1,48 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center min-h-screen py-12">
-    <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105">
+<body class="bg-gradient-to-br from-indigo-100 to-purple-100 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 flex items-center justify-center min-h-screen py-12 transition-colors duration-300">
+    <div class="bg-white dark:bg-gray-800 p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105 relative">
+        <div class="absolute top-4 right-4 flex items-center">
+            <span class="text-sm text-gray-800 dark:text-gray-200 mr-2">Dark Mode</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 dark:peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+            </label>
+        </div>
         <img src="https://cdn11.bigcommerce.com/s-rntzxs90f5/images/stencil/250x83/good_logo_1672955118__87815.original.jpg" alt="Logo" class="mx-auto mb-6 w-48">
         <div class="space-y-8">
             <div>
-                <label for="cost" class="block text-base font-medium text-gray-800">Cost (CAD)</label>
-                <input type="number" id="cost" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter cost">
+                <label for="cost" class="block text-base font-medium text-gray-800 dark:text-gray-200">Cost (CAD)</label>
+                <input type="number" id="cost" step="0.01" min="0" class="mt-2 block w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 p-4 bg-gray-50 dark:bg-gray-700 text-lg text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500" placeholder="Enter cost">
                 <p id="cost-error" class="text-red-500 text-sm mt-2 hidden">Cost must be non-negative.</p>
             </div>
             <div>
-                <label for="margin" class="block text-base font-medium text-gray-800">Margin (%)</label>
-                <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter margin percentage">
+                <label for="margin" class="block text-base font-medium text-gray-800 dark:text-gray-200">Margin (%)</label>
+                <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-2 block w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 p-4 bg-gray-50 dark:bg-gray-700 text-lg text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500" placeholder="Enter margin percentage">
                 <p id="margin-error" class="text-red-500 text-sm mt-2 hidden">Margin must be between 0 and 99.99%.</p>
             </div>
             <div>
-                <label for="revenue" class="block text-base font-medium text-gray-800">Revenue (CAD)</label>
-                <input type="number" id="revenue" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter revenue">
+                <label for="revenue" class="block text-base font-medium text-gray-800 dark:text-gray-200">Revenue (CAD)</label>
+                <input type="number" id="revenue" step="0.01" min="0" class="mt-2 block w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-500 dark:focus:border-indigo-500 p-4 bg-gray-50 dark:bg-gray-700 text-lg text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500" placeholder="Enter revenue">
                 <p id="revenue-error" class="text-red-500 text-sm mt-2 hidden">Revenue must be non-negative.</p>
             </div>
             <div class="mt-6">
-                <p class="text-base font-medium text-gray-800">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600">0.00</span></p>
-                <p class="text-sm text-gray-500">Exchange rate updated live</p>
+                <p class="text-base font-medium text-gray-800 dark:text-gray-200">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600 dark:text-indigo-400">0.00</span></p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Exchange rate updated live</p>
             </div>
             <div class="flex space-x-6">
-                <button id="reset-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition text-lg">Reset</button>
-                <button id="toggle-summary" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Hide Summary</button>
-                <button id="toggle-history" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Show History</button>
+                <button id="reset-btn" class="w-full bg-indigo-600 dark:bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition text-lg">Reset</button>
+                <button id="toggle-summary" class="w-full bg-gray-600 dark:bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition text-lg">Hide Summary</button>
+                <button id="toggle-history" class="w-full bg-gray-600 dark:bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition text-lg">Show History</button>
             </div>
-            <div id="summary-section" class="mt-8 p-6 bg-indigo-50 rounded-lg">
-                <h2 class="text-xl font-semibold text-indigo-700 mb-3">Summary</h2>
-                <p class="text-base text-gray-700">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
-                <p class="text-base text-gray-700">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
-                <p class="text-base text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
-                <p class="text-base text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
+            <div id="summary-section" class="mt-8 p-6 bg-indigo-50 dark:bg-indigo-900 rounded-lg">
+                <h2 class="text-xl font-semibold text-indigo-700 dark:text-indigo-300 mb-3">Summary</h2>
+                <p class="text-base text-gray-700 dark:text-gray-200">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700 dark:text-gray-200">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
+                <p class="text-base text-gray-700 dark:text-gray-200">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700 dark:text-gray-200">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
             </div>
-            <div id="history-section" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-3">Calculation History</h2>
-                <ul id="history-list" class="text-base text-gray-600 space-y-3 max-h-48 overflow-y-auto"></ul>
+            <div id="history-section" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Calculation History</h2>
+                <ul id="history-list" class="text-base text-gray-600 dark:text-gray-300 space-y-3 max-h-48 overflow-y-auto"></ul>
             </div>
         </div>
     </div>
@@ -59,6 +66,7 @@
         const resetBtn = document.getElementById('reset-btn');
         const toggleSummaryBtn = document.getElementById('toggle-summary');
         const toggleHistoryBtn = document.getElementById('toggle-history');
+        const themeToggle = document.getElementById('theme-toggle');
         const summarySection = document.getElementById('summary-section');
         const historySection = document.getElementById('history-section');
         const historyList = document.getElementById('history-list');
@@ -201,6 +209,11 @@
                 addToHistory();
             }
         }
+
+        // Toggle theme
+        themeToggle.addEventListener('change', () => {
+            document.documentElement.classList.toggle('dark');
+        });
 
         // Event listeners for input changes
         costInput.addEventListener('input', () => {

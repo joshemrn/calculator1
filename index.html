@@ -306,7 +306,7 @@
       const input = document.getElementById("gx-input");
       const msgs = document.getElementById("gx-messages");
 
-      const gxHistory = []; // chat history kept on the client for context
+      const gxHistory = []; // chat history for context
 
       function addMsg(text, who = "bot") {
         const div = document.createElement("div");
@@ -329,7 +329,7 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            system: "You are a concise pricing and margin assistant for EMRN. Remain neutral on politics and religion. Help with margins, CAD↔USD context, and the calculator on this page. Double-check math.",
+            system: "You are a concise pricing and margin assistant for EMRN. Remain neutral on politics and religion. Help with margins, CAD↔USD context, and this calculator. Double-check math.",
             messages: gxHistory
           })
         });
@@ -344,7 +344,7 @@
       }
 
       async function askGemini(prompt) {
-        // Pull current page state for grounding
+        // Read current page state for grounding
         const cost = document.querySelector("#cost")?.value || "";
         const margin = document.querySelector("#margin")?.value || "";
         const revenue = document.querySelector("#revenue")?.value || "";

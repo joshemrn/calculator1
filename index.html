@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5LPL0MV2J"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-C5LPL0MV2J');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5LPL0MV2J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-C5LPL0MV2J');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <title>EMRN Margin Calculator</title>
 </head>
 <body class="bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center min-h-screen py-12">
     <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105">
@@ -56,6 +56,7 @@
         </div>
     </div>
 
+    <!-- Core calculator logic -->
     <script>
         const costInput = document.getElementById('cost');
         const marginInput = document.getElementById('margin');
@@ -269,6 +270,103 @@
         loadSavedValues();
         updateHistory();
     </script>
+
+    <!-- Floating Gemini Chat (secure: calls your Cloudflare Worker) -->
+    <style>
+      #gx-toggle{position:fixed;right:16px;bottom:16px;border:none;border-radius:999px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.15);cursor:pointer;font-weight:600;background:#111827;color:#fff;z-index:50}
+      #gx-panel{position:fixed;right:16px;bottom:80px;width:360px;max-width:92vw;height:520px;display:none;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden;z-index:50}
+      #gx-header{padding:10px 12px;border-bottom:1px solid #f1f5f9;background:#f8fafc;font-weight:600}
+      #gx-messages{flex:1;padding:12px;overflow:auto;font:14px/1.4 system-ui,Segoe UI,Roboto,Arial}
+      .gx-msg{margin:8px 0;max-width:85%}
+      .gx-user{margin-left:auto;background:#e0f2fe;border-radius:12px 12px 0 12px;padding:8px 10px}
+      .gx-bot{background:#f1f5f9;border-radius:12px 12px 12px 0;padding:8px 10px}
+      #gx-form{display:flex;gap:8px;padding:10px;border-top:1px solid #f1f5f9}
+      #gx-input{flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:10px}
+      #gx-send{border:none;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
+      .gx-small{font-size:12px;color:#64748b}
+    </style>
+
+    <button id="gx-toggle" aria-controls="gx-panel" aria-expanded="false">💬 Gemini</button>
+    <div id="gx-panel" aria-live="polite" role="dialog" aria-label="Gemini Assistant">
+      <div id="gx-header">Gemini Assistant <span class="gx-small">for EMRN calculator</span></div>
+      <div id="gx-messages" aria-live="polite"></div>
+      <form id="gx-form">
+        <input id="gx-input" placeholder="Ask about margins, USD/CAD, etc." autocomplete="off" aria-label="Gemini message input" />
+        <button id="gx-send" type="submit">Send</button>
+      </form>
+    </div>
+
+    <script>
+      // Your Cloudflare Worker endpoint (keeps the API key secret)
+      const GX_ENDPOINT = "https://hidden-silence-31c9.j-breuer.workers.dev/";
+
+      const panel = document.getElementById("gx-panel");
+      const toggle = document.getElementById("gx-toggle");
+      const form = document.getElementById("gx-form");
+      const input = document.getElementById("gx-input");
+      const msgs = document.getElementById("gx-messages");
+
+      const gxHistory = []; // chat history kept on the client for context
+
+      function addMsg(text, who = "bot") {
+        const div = document.createElement("div");
+        div.className = `gx-msg gx-${who}`;
+        div.textContent = text;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      toggle.addEventListener("click", () => {
+        const open = panel.style.display === "flex";
+        panel.style.display = open ? "none" : "flex";
+        toggle.setAttribute("aria-expanded", String(!open));
+      });
+
+      async function gxAsk(prompt, pageStateNote = "") {
+        gxHistory.push({ role: "user", text: prompt + pageStateNote });
+
+        const res = await fetch(GX_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system: "You are a concise pricing and margin assistant for EMRN. Remain neutral on politics and religion. Help with margins, CAD↔USD context, and the calculator on this page. Double-check math.",
+            messages: gxHistory
+          })
+        });
+
+        const data = await res.json();
+        const text =
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          data?.error ||
+          "(no response)";
+        gxHistory.push({ role: "model", text });
+        return text;
+      }
+
+      async function askGemini(prompt) {
+        // Pull current page state for grounding
+        const cost = document.querySelector("#cost")?.value || "";
+        const margin = document.querySelector("#margin")?.value || "";
+        const revenue = document.querySelector("#revenue")?.value || "";
+        const usd = document.querySelector("#usd-revenue")?.textContent || "";
+        const note = `\n\n[Page state] cost=${cost || "(blank)"}, margin=${margin || "(blank)"}%, revenueCAD=${revenue || "(blank)"}, revenueUSD=${usd || "(blank)"}`;
+        return gxAsk(prompt, note);
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const q = (input.value || "").trim();
+        if (!q) return;
+        addMsg(q, "user");
+        input.value = "";
+        try {
+          addMsg("Thinking…");
+          const reply = await askGemini(q);
+          msgs.lastChild.textContent = reply || "(No response)";
+        } catch (err) {
+          msgs.lastChild.textContent = "Error: " + (err?.message || err);
+        }
+      });
+    </script>
 </body>
 </html>
-

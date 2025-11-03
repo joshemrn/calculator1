@@ -1,311 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5LPL0MV2J"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-C5LPL0MV2J');
-  </script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>EMRN Margin Calculator</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5LPL0MV2J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C5LPL0MV2J');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center min-h-screen py-12">
-  <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105">
-    <img src="https://cdn11.bigcommerce.com/s-rntzxs90f5/images/stencil/250x83/good_logo_1672955118__87815.original.jpg" alt="Logo" class="mx-auto mb-6 w-48">
-    <div class="space-y-8">
-      <div>
-        <label for="cost" class="block text-base font-medium text-gray-800">Cost (CAD)</label>
-        <input type="number" id="cost" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter cost">
-        <p id="cost-error" class="text-red-500 text-sm mt-2 hidden">Cost must be non-negative.</p>
-      </div>
-      <div>
-        <label for="margin" class="block text-base font-medium text-gray-800">Margin (%)</label>
-        <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter margin percentage">
-        <p id="margin-error" class="text-red-500 text-sm mt-2 hidden">Margin must be between 0 and 99.99%.</p>
-      </div>
-      <div>
-        <label for="revenue" class="block text-base font-medium text-gray-800">Revenue (CAD)</label>
-        <input type="number" id="revenue" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter revenue">
-        <p id="revenue-error" class="text-red-500 text-sm mt-2 hidden">Revenue must be non-negative.</p>
-      </div>
-      <div class="mt-6">
-        <p class="text-base font-medium text-gray-800">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600">0.00</span></p>
-        <p class="text-sm text-gray-500">Exchange rate updated live</p>
-      </div>
-      <div class="flex space-x-6">
-        <button id="reset-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition text-lg">Reset</button>
-        <button id="toggle-summary" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Hide Summary</button>
-        <button id="toggle-history" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Show History</button>
-      </div>
-      <div id="summary-section" class="mt-8 p-6 bg-indigo-50 rounded-lg">
-        <h2 class="text-xl font-semibold text-indigo-700 mb-3">Summary</h2>
-        <p class="text-base text-gray-700">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
-        <p class="text-base text-gray-700">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
-        <p class="text-base text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
-        <p class="text-base text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
-      </div>
-      <div id="history-section" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
-        <h2 class="text-xl font-semibold text-gray-700 mb-3">Calculation History</h2>
-        <ul id="history-list" class="text-base text-gray-600 space-y-3 max-h-48 overflow-y-auto"></ul>
-      </div>
+    <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all hover:scale-105">
+        <img src="https://cdn11.bigcommerce.com/s-rntzxs90f5/images/stencil/250x83/good_logo_1672955118__87815.original.jpg" alt="Logo" class="mx-auto mb-6 w-48">
+        <div class="space-y-8">
+            <div>
+                <label for="cost" class="block text-base font-medium text-gray-800">Cost (CAD)</label>
+                <input type="number" id="cost" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter cost">
+                <p id="cost-error" class="text-red-500 text-sm mt-2 hidden">Cost must be non-negative.</p>
+            </div>
+            <div>
+                <label for="margin" class="block text-base font-medium text-gray-800">Margin (%)</label>
+                <input type="number" id="margin" step="0.01" min="0" max="99.99" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter margin percentage">
+                <p id="margin-error" class="text-red-500 text-sm mt-2 hidden">Margin must be between 0 and 99.99%.</p>
+            </div>
+            <div>
+                <label for="revenue" class="block text-base font-medium text-gray-800">Revenue (CAD)</label>
+                <input type="number" id="revenue" step="0.01" min="0" class="mt-2 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 bg-gray-50 text-lg text-gray-900 placeholder-gray-400" placeholder="Enter revenue">
+                <p id="revenue-error" class="text-red-500 text-sm mt-2 hidden">Revenue must be non-negative.</p>
+            </div>
+            <div class="mt-6">
+                <p class="text-base font-medium text-gray-800">Revenue in USD: <span id="usd-revenue" class="font-bold text-indigo-600">0.00</span></p>
+                <p class="text-sm text-gray-500">Exchange rate updated live</p>
+            </div>
+            <div class="flex space-x-6">
+                <button id="reset-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition text-lg">Reset</button>
+                <button id="toggle-summary" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Hide Summary</button>
+                <button id="toggle-history" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition text-lg">Show History</button>
+            </div>
+            <div id="summary-section" class="mt-8 p-6 bg-indigo-50 rounded-lg">
+                <h2 class="text-xl font-semibold text-indigo-700 mb-3">Summary</h2>
+                <p class="text-base text-gray-700">Cost: <span id="summary-cost" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700">Margin: <span id="summary-margin" class="font-medium">0.00%</span></p>
+                <p class="text-base text-gray-700">Revenue: <span id="summary-revenue" class="font-medium">0.00 CAD</span></p>
+                <p class="text-base text-gray-700">Revenue (USD): <span id="summary-usd" class="font-medium">0.00 USD</span></p>
+            </div>
+            <div id="history-section" class="mt-8 p-6 bg-gray-50 rounded-lg hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3">Calculation History</h2>
+                <ul id="history-list" class="text-base text-gray-600 space-y-3 max-h-48 overflow-y-auto"></ul>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const costInput = document.getElementById('cost');
-    const marginInput = document.getElementById('margin');
-    const revenueInput = document.getElementById('revenue');
-    const usdRevenue = document.getElementById('usd-revenue');
-    const summaryCost = document.getElementById('summary-cost');
-    const summaryMargin = document.getElementById('summary-margin');
-    const summaryRevenue = document.getElementById('summary-revenue');
-    const summaryUsd = document.getElementById('summary-usd');
-    const resetBtn = document.getElementById('reset-btn');
-    const toggleSummaryBtn = document.getElementById('toggle-summary');
-    const toggleHistoryBtn = document.getElementById('toggle-history');
-    const summarySection = document.getElementById('summary-section');
-    const historySection = document.getElementById('history-section');
-    const historyList = document.getElementById('history-list');
-    const costError = document.getElementById('cost-error');
-    const marginError = document.getElementById('margin-error');
-    const revenueError = document.getElementById('revenue-error');
+    <script>
+        const costInput = document.getElementById('cost');
+        const marginInput = document.getElementById('margin');
+        const revenueInput = document.getElementById('revenue');
+        const usdRevenue = document.getElementById('usd-revenue');
+        const summaryCost = document.getElementById('summary-cost');
+        const summaryMargin = document.getElementById('summary-margin');
+        const summaryRevenue = document.getElementById('summary-revenue');
+        const summaryUsd = document.getElementById('summary-usd');
+        const resetBtn = document.getElementById('reset-btn');
+        const toggleSummaryBtn = document.getElementById('toggle-summary');
+        const toggleHistoryBtn = document.getElementById('toggle-history');
+        const summarySection = document.getElementById('summary-section');
+        const historySection = document.getElementById('history-section');
+        const historyList = document.getElementById('history-list');
+        const costError = document.getElementById('cost-error');
+        const marginError = document.getElementById('margin-error');
+        const revenueError = document.getElementById('revenue-error');
 
-    let exchangeRate = 0.72; // Default CAD to USD rate
-    let history = JSON.parse(localStorage.getItem('marginCalcHistory')) || [];
+        let exchangeRate = 0.72; // Default CAD to USD rate
+        let history = JSON.parse(localStorage.getItem('marginCalcHistory')) || [];
 
-    function loadSavedValues() {
-      const saved = JSON.parse(localStorage.getItem('marginCalcValues')) || {};
-      costInput.value = saved.cost || '';
-      marginInput.value = saved.margin || '';
-      revenueInput.value = saved.revenue || '';
-      updateUSD();
-      updateSummary();
-    }
-
-    function saveValues() {
-      localStorage.setItem('marginCalcValues', JSON.stringify({
-        cost: costInput.value,
-        margin: marginInput.value,
-        revenue: revenueInput.value
-      }));
-    }
-
-    function addToHistory() {
-      const entry = {
-        cost: (parseFloat(costInput.value) || 0).toFixed(2),
-        margin: (parseFloat(marginInput.value) || 0).toFixed(2),
-        revenue: (parseFloat(revenueInput.value) || 0).toFixed(2),
-        usd: (parseFloat(revenueInput.value) * exchangeRate || 0).toFixed(2),
-        timestamp: new Date().toLocaleString()
-      };
-      history.unshift(entry);
-      if (history.length > 5) history.pop();
-      localStorage.setItem('marginCalcHistory', JSON.stringify(history));
-      updateHistory();
-    }
-
-    function updateHistory() {
-      historyList.innerHTML = '';
-      history.forEach(entry => {
-        const li = document.createElement('li');
-        li.textContent = `Cost: ${entry.cost} CAD, Margin: ${entry.margin}%, Revenue: ${entry.revenue} CAD, USD: ${entry.usd} (${entry.timestamp})`;
-        historyList.appendChild(li);
-      });
-    }
-
-    async function fetchExchangeRate() {
-      try {
-        const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
-        const data = await response.json();
-        exchangeRate = data.rates.USD;
-        updateUSD();
-      } catch (error) {
-        console.error('Error fetching exchange rate:', error);
-      }
-    }
-
-    function updateUSD() {
-      const revenue = parseFloat(revenueInput.value) || 0;
-      const usdValue = (revenue * exchangeRate).toFixed(2);
-      usdRevenue.textContent = usdValue;
-      summaryUsd.textContent = `${usdValue} USD`;
-      updateSummary();
-    }
-
-    function updateSummary() {
-      summaryCost.textContent = `${(parseFloat(costInput.value) || 0).toFixed(2)} CAD`;
-      summaryMargin.textContent = `${(parseFloat(marginInput.value) || 0).toFixed(2)}%`;
-      summaryRevenue.textContent = `${(parseFloat(revenueInput.value) || 0).toFixed(2)} CAD`;
-    }
-
-    function validateInputs() {
-      let valid = true;
-      costError.classList.add('hidden');
-      marginError.classList.add('hidden');
-      revenueError.classList.add('hidden');
-      if (costInput.value && parseFloat(costInput.value) < 0) {
-        costError.classList.remove('hidden'); valid = false;
-      }
-      if (marginInput.value && (parseFloat(marginInput.value) < 0 || parseFloat(marginInput.value) >= 100)) {
-        marginError.classList.remove('hidden'); valid = false;
-      }
-      if (revenueInput.value && parseFloat(revenueInput.value) < 0) {
-        revenueError.classList.remove('hidden'); valid = false;
-      }
-      return valid;
-    }
-
-    function calculateRevenue() {
-      if (!validateInputs()) return;
-      const cost = parseFloat(costInput.value) || 0;
-      const margin = parseFloat(marginInput.value) || 0;
-      if (cost > 0 && margin >= 0 && margin < 100) {
-        const revenue = cost / (1 - margin / 100);
-        revenueInput.value = revenue.toFixed(2);
-        updateUSD();
-        addToHistory();
-      }
-    }
-
-    function calculateCost() {
-      if (!validateInputs()) return;
-      const revenue = parseFloat(revenueInput.value) || 0;
-      const margin = parseFloat(marginInput.value) || 0;
-      if (revenue > 0 && margin >= 0 && margin < 100) {
-        const cost = revenue * (1 - margin / 100);
-        costInput.value = cost.toFixed(2);
-        updateUSD();
-        addToHistory();
-      }
-    }
-
-    function calculateMargin() {
-      if (!validateInputs()) return;
-      const cost = parseFloat(costInput.value) || 0;
-      const revenue = parseFloat(revenueInput.value) || 0;
-      if (cost > 0 && revenue > cost) {
-        const margin = 100 * (1 - cost / revenue);
-        marginInput.value = margin.toFixed(2);
-        updateUSD();
-        addToHistory();
-      }
-    }
-
-    costInput.addEventListener('input', () => { if (validateInputs()) { if (marginInput.value) calculateRevenue(); else if (revenueInput.value) calculateMargin(); saveValues(); updateSummary(); } });
-    marginInput.addEventListener('input', () => { if (validateInputs()) { if (costInput.value) calculateRevenue(); else if (revenueInput.value) calculateCost(); saveValues(); updateSummary(); } });
-    revenueInput.addEventListener('input', () => { if (validateInputs()) { if (costInput.value) calculateMargin(); else if (marginInput.value) calculateCost(); saveValues(); updateUSD(); } });
-
-    resetBtn.addEventListener('click', () => { costInput.value = ''; marginInput.value = ''; revenueInput.value = ''; costError.classList.add('hidden'); marginError.classList.add('hidden'); revenueError.classList.add('hidden'); updateUSD(); updateSummary(); localStorage.removeItem('marginCalcValues'); });
-    toggleSummaryBtn.addEventListener('click', () => { summarySection.classList.toggle('hidden'); toggleSummaryBtn.textContent = summarySection.classList.contains('hidden') ? 'Show Summary' : 'Hide Summary'; });
-    toggleHistoryBtn.addEventListener('click', () => { historySection.classList.toggle('hidden'); toggleHistoryBtn.textContent = historySection.classList.contains('hidden') ? 'Show History' : 'Hide History'; });
-
-    fetchExchangeRate();
-    loadSavedValues();
-    updateHistory();
-  </script>
-
-  <!-- Gemini Assistant UI -->
-  <style>
-    #gx-toggle{position:fixed;right:16px;bottom:16px;border:none;border-radius:999px;padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.15);cursor:pointer;font-weight:600;background:#111827;color:#fff;z-index:50}
-    #gx-panel{position:fixed;right:16px;bottom:80px;width:360px;max-width:92vw;height:520px;display:none;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden;z-index:50}
-    #gx-header{padding:10px 12px;border-bottom:1px solid #f1f5f9;background:#f8fafc;font-weight:600}
-    #gx-messages{flex:1;padding:12px;overflow:auto;font:14px/1.4 system-ui,Segoe UI,Roboto,Arial}
-    .gx-msg{margin:8px 0;max-width:85%}
-    .gx-user{margin-left:auto;background:#e0f2fe;border-radius:12px 12px 0 12px;padding:8px 10px}
-    .gx-bot{background:#f1f5f9;border-radius:12px 12px 12px 0;padding:8px 10px}
-    #gx-form{display:flex;gap:8px;padding:10px;border-top:1px solid #f1f5f9}
-    #gx-input{flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:10px}
-    #gx-send{border:none;background:#111827;color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
-  </style>
-
-  <button id="gx-toggle" aria-controls="gx-panel" aria-expanded="false">💬 Gemini</button>
-  <div id="gx-panel">
-    <div id="gx-header">Gemini Assistant <span class="gx-small">for EMRN calculator</span></div>
-    <div id="gx-messages"></div>
-    <form id="gx-form">
-      <input id="gx-input" placeholder="Ask about margins, USD/CAD, etc." autocomplete="off" />
-      <button id="gx-send" type="submit">Send</button>
-    </form>
-  </div>
-
-  <script>
-    const GX_ENDPOINT = "https://hidden-silence-31c9.j-breuer.workers.dev/";
-
-    const panel = document.getElementById("gx-panel");
-    const toggle = document.getElementById("gx-toggle");
-    const form = document.getElementById("gx-form");
-    const input = document.getElementById("gx-input");
-    const msgs = document.getElementById("gx-messages");
-
-    const gxHistory = [];
-
-    function toStr(x) {
-      if (x == null) return "";
-      return typeof x === "string" ? x : JSON.stringify(x);
-    }
-
-    function addMsg(text, who = "bot") {
-      const div = document.createElement("div");
-      div.className = `gx-msg gx-${who}`;
-      div.textContent = toStr(text);
-      msgs.appendChild(div);
-      msgs.scrollTop = msgs.scrollHeight;
-    }
-
-    toggle.addEventListener("click", () => {
-      const open = panel.style.display === "flex";
-      panel.style.display = open ? "none" : "flex";
-      toggle.setAttribute("aria-expanded", String(!open));
-    });
-
-    function extractGeminiText(data) {
-      const parts = data?.candidates?.[0]?.content?.parts;
-      if (Array.isArray(parts)) {
-        for (const p of parts) {
-          if (typeof p?.text === "string" && p.text.trim()) return p.text;
-          if (typeof p === "string" && p.trim()) return p;
+        // Load saved values from localStorage
+        function loadSavedValues() {
+            const saved = JSON.parse(localStorage.getItem('marginCalcValues')) || {};
+            costInput.value = saved.cost || '';
+            marginInput.value = saved.margin || '';
+            revenueInput.value = saved.revenue || '';
+            updateUSD();
+            updateSummary();
         }
-      }
-      if (data?.promptFeedback?.blockReason)
-        return `Response blocked by safety (${data.promptFeedback.blockReason}).`;
-      if (data?.error) return toStr(data.error);
-      return toStr(data);
-    }
 
-    async function gxAsk(prompt, pageStateNote = "") {
-      gxHistory.push({ role: "user", text: prompt + pageStateNote });
-      const res = await fetch(GX_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are a concise pricing assistant for EMRN. Stay neutral on politics and religion.",
-          messages: gxHistory,
-        }),
-      });
-      if (!res.ok) throw new Error(`Worker ${res.status}`);
-      const data = await res.json();
-      const text = extractGeminiText(data);
-      gxHistory.push({ role: "model", text });
-      return text;
-    }
+        // Save values to localStorage
+        function saveValues() {
+            localStorage.setItem('marginCalcValues', JSON.stringify({
+                cost: costInput.value,
+                margin: marginInput.value,
+                revenue: revenueInput.value
+            }));
+        }
 
-    async function askGemini(prompt) {
-      const cost = document.querySelector("#cost")?.value || "";
-      const margin = document.querySelector("#margin")?.value || "";
-      const revenue = document.querySelector("#revenue")?.value || "";
-      const usd = document.querySelector("#usd-revenue")?.textContent || "";
-      const note = `\n\n[Page state] cost=${cost}, margin=${margin}%, revenueCAD=${revenue}, revenueUSD=${usd}`;
-      return gxAsk(prompt, note);
-    }
+        // Add to history
+        function addToHistory() {
+            const entry = {
+                cost: (parseFloat(costInput.value) || 0).toFixed(2),
+                margin: (parseFloat(marginInput.value) || 0).toFixed(2),
+                revenue: (parseFloat(revenueInput.value) || 0).toFixed(2),
+                usd: (parseFloat(revenueInput.value) * exchangeRate || 0).toFixed(2),
+                timestamp: new Date().toLocaleString()
+            };
+            history.unshift(entry);
+            if (history.length > 5) history.pop();
+            localStorage.setItem('marginCalcHistory', JSON.stringify(history));
+            updateHistory();
+        }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const q = (input.value || "").trim();
-      if (!q) return;
-      addMsg(q, "user");
-      input
+        // Update history display
+        function updateHistory() {
+            historyList.innerHTML = '';
+            history.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `Cost: ${entry.cost} CAD, Margin: ${entry.margin}%, Revenue: ${entry.revenue} CAD, USD: ${entry.usd} (${entry.timestamp})`;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Fetch live CAD to USD exchange rate
+        async function fetchExchangeRate() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
+                const data = await response.json();
+                exchangeRate = data.rates.USD;
+                updateUSD();
+            } catch (error) {
+                console.error('Error fetching exchange rate:', error);
+            }
+        }
+
+        // Update USD conversion and summary
+        function updateUSD() {
+            const revenue = parseFloat(revenueInput.value) || 0;
+            const usdValue = (revenue * exchangeRate).toFixed(2);
+            usdRevenue.textContent = usdValue;
+            summaryUsd.textContent = `${usdValue} USD`;
+            updateSummary();
+        }
+
+        // Update summary section
+        function updateSummary() {
+            summaryCost.textContent = `${(parseFloat(costInput.value) || 0).toFixed(2)} CAD`;
+            summaryMargin.textContent = `${(parseFloat(marginInput.value) || 0).toFixed(2)}%`;
+            summaryRevenue.textContent = `${(parseFloat(revenueInput.value) || 0).toFixed(2)} CAD`;
+        }
+
+        // Validate inputs
+        function validateInputs() {
+            let valid = true;
+            costError.classList.add('hidden');
+            marginError.classList.add('hidden');
+            revenueError.classList.add('hidden');
+
+            if (costInput.value && parseFloat(costInput.value) < 0) {
+                costError.classList.remove('hidden');
+                valid = false;
+            }
+            if (marginInput.value && (parseFloat(marginInput.value) < 0 || parseFloat(marginInput.value) >= 100)) {
+                marginError.classList.remove('hidden');
+                valid = false;
+            }
+            if (revenueInput.value && parseFloat(revenueInput.value) < 0) {
+                revenueError.classList.remove('hidden');
+                valid = false;
+            }
+            return valid;
+        }
+
+        // Calculate Revenue: Revenue = Cost / (1 - Margin/100)
+        function calculateRevenue() {
+            if (!validateInputs()) return;
+            const cost = parseFloat(costInput.value) || 0;
+            const margin = parseFloat(marginInput.value) || 0;
+            if (cost > 0 && margin >= 0 && margin < 100) {
+                const revenue = cost / (1 - margin / 100);
+                revenueInput.value = revenue.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
+
+        // Calculate Cost: Cost = Revenue * (1 - Margin/100)
+        function calculateCost() {
+            if (!validateInputs()) return;
+            const revenue = parseFloat(revenueInput.value) || 0;
+            const margin = parseFloat(marginInput.value) || 0;
+            if (revenue > 0 && margin >= 0 && margin < 100) {
+                const cost = revenue * (1 - margin / 100);
+                costInput.value = cost.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
+
+        // Calculate Margin: Margin = 100 * (1 - Cost/Revenue)
+        function calculateMargin() {
+            if (!validateInputs()) return;
+            const cost = parseFloat(costInput.value) || 0;
+            const revenue = parseFloat(revenueInput.value) || 0;
+            if (cost > 0 && revenue > cost) {
+                const margin = 100 * (1 - cost / revenue);
+                marginInput.value = margin.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
+
+        // Event listeners for input changes
+        costInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (marginInput.value) calculateRevenue();
+                else if (revenueInput.value) calculateMargin();
+                saveValues();
+                updateSummary();
+            }
+        });
+
+        marginInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (costInput.value) calculateRevenue();
+                else if (revenueInput.value) calculateCost();
+                saveValues();
+                updateSummary();
+            }
+        });
+
+        revenueInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (costInput.value) calculateMargin();
+                else if (marginInput.value) calculateCost();
+                saveValues();
+                updateUSD();
+            }
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            costInput.value = '';
+            marginInput.value = '';
+            revenueInput.value = '';
+            costError.classList.add('hidden');
+            marginError.classList.add('hidden');
+            revenueError.classList.add('hidden');
+            updateUSD();
+            updateSummary();
+            localStorage.removeItem('marginCalcValues');
+        });
+
+        // Toggle summary visibility
+        toggleSummaryBtn.addEventListener('click', () => {
+            summarySection.classList.toggle('hidden');
+            toggleSummaryBtn.textContent = summarySection.classList.contains('hidden') ? 'Show Summary' : 'Hide Summary';
+        });
+
+        // Toggle history visibility
+        toggleHistoryBtn.addEventListener('click', () => {
+            historySection.classList.toggle('hidden');
+            toggleHistoryBtn.textContent = historySection.classList.contains('hidden') ? 'Show History' : 'Hide History';
+        });
+
+        // Fetch exchange rate and load saved values on load
+        fetchExchangeRate();
+        loadSavedValues();
+        updateHistory();
+    </script>
+</body>
+</html>

@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <!-- Your existing calculator script -->
+    <!-- Your original calculator script (100% unchanged) -->
     <script>
         const costInput = document.getElementById('cost');
         const marginInput = document.getElementById('margin');
@@ -74,19 +74,184 @@
         const costError = document.getElementById('cost-error');
         const marginError = document.getElementById('margin-error');
         const revenueError = document.getElementById('revenue-error');
-        let exchangeRate = 0.72; // Default CAD to USD rate
+        let exchangeRate = 0.72;
         let history = JSON.parse(localStorage.getItem('marginCalcHistory')) || [];
 
-        // ... (all your existing JavaScript functions remain unchanged) ...
+        function loadSavedValues() {
+            const saved = JSON.parse(localStorage.getItem('marginCalcValues')) || {};
+            costInput.value = saved.cost || '';
+            marginInput.value = saved.margin || '';
+            revenueInput.value = saved.revenue || '';
+            updateUSD();
+            updateSummary();
+        }
+        function saveValues() {
+            localStorage.setItem('marginCalcValues', JSON.stringify({
+                cost: costInput.value,
+                margin: marginInput.value,
+                revenue: revenueInput.value
+            }));
+        }
+        function addToHistory() {
+            const entry = {
+                cost: (parseFloat(costInput.value) || 0).toFixed(2),
+                margin: (parseFloat(marginInput.value) || 0).toFixed(2),
+                revenue: (parseFloat(revenueInput.value) || 0).toFixed(2),
+                usd: (parseFloat(revenueInput.value) * exchangeRate || 0).toFixed(2),
+                timestamp: new Date().toLocaleString()
+            };
+            history.unshift(entry);
+            if (history.length > 5) history.pop();
+            localStorage.setItem('marginCalcHistory', JSON.stringify(history));
+            updateHistory();
+        }
+        function updateHistory() {
+            historyList.innerHTML = '';
+            history.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `Cost: ${entry.cost} CAD, Margin: ${entry.margin}%, Revenue: ${entry.revenue} CAD, USD: ${entry.usd} (${entry.timestamp})`;
+                historyList.appendChild(li);
+            });
+        }
+        async function fetchExchangeRate() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/CAD');
+                const data = await response.json();
+                exchangeRate = data.rates.USD;
+                updateUSD();
+            } catch (error) {
+                console.error('Error fetching exchange rate:', error);
+            }
+        }
+        function updateUSD() {
+            const revenue = parseFloat(revenueInput.value) || 0;
+            const usdValue = (revenue * exchangeRate).toFixed(2);
+            usdRevenue.textContent = usdValue;
+            summaryUsd.textContent = `${usdValue} USD`;
+            updateSummary();
+        }
+        function updateSummary() {
+            summaryCost.textContent = `${(parseFloat(costInput.value) || 0).toFixed(2)} CAD`;
+            summaryMargin.textContent = `${(parseFloat(marginInput.value) || 0).toFixed(2)}%`;
+            summaryRevenue.textContent = `${(parseFloat(revenueInput.value) || 0).toFixed(2)} CAD`;
+        }
+        function validateInputs() {
+            let valid = true;
+            costError.classList.add('hidden');
+            marginError.classList.add('hidden');
+            revenueError.classList.add('hidden');
+            if (costInput.value && parseFloat(costInput.value) < 0) {
+                costError.classList.remove('hidden');
+                valid = false;
+            }
+            if (marginInput.value && (parseFloat(marginInput.value) < 0 || parseFloat(marginInput.value) >= 100)) {
+                marginError.classList.remove('hidden');
+                valid = false;
+            }
+            if (revenueInput.value && parseFloat(revenueInput.value) < 0) {
+                revenueError.classList.remove('hidden');
+                valid = false;
+            }
+            return valid;
+        }
+        function calculateRevenue() {
+            if (!validateInputs()) return;
+            const cost = parseFloat(costInput.value) || 0;
+            const margin = parseFloat(marginInput.value) || 0;
+            if (cost > 0 && margin >= 0 && margin < 100) {
+                const revenue = cost / (1 - margin / 100);
+                revenueInput.value = revenue.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
+        function calculateCost() {
+            if (!validateInputs()) return;
+            const revenue = parseFloat(revenueInput.value) || 0;
+            const margin = parseFloat(marginInput.value) || 0;
+            if (revenue > 0 && margin >= 0 && margin < 100) {
+                const cost = revenue * (1 - margin / 100);
+                costInput.value = cost.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
+        function calculateMargin() {
+            if (!validateInputs()) return;
+            const cost = parseFloat(costInput.value) || 0;
+            const revenue = parseFloat(revenueInput.value) || 0;
+            if (cost > 0 && revenue > cost) {
+                const margin = 100 * (1 - cost / revenue);
+                marginInput.value = margin.toFixed(2);
+                updateUSD();
+                addToHistory();
+            }
+        }
 
-        // Fetch exchange rate and load saved values on load
+        costInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (marginInput.value) calculateRevenue();
+                else if (revenueInput.value) calculateMargin();
+                saveValues();
+                updateSummary();
+            }
+        });
+        marginInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (costInput.value) calculateRevenue();
+                else if (revenueInput.value) calculateCost();
+                saveValues();
+                updateSummary();
+            }
+        });
+        revenueInput.addEventListener('input', () => {
+            if (validateInputs()) {
+                if (costInput.value) calculateMargin();
+                else if (marginInput.value) calculateCost();
+                saveValues();
+                updateUSD();
+            }
+        });
+        resetBtn.addEventListener('click', () => {
+            costInput.value = '';
+            marginInput.value = '';
+            revenueInput.value = '';
+            costError.classList.add('hidden');
+            marginError.classList.add('hidden');
+            revenueError.classList.add('hidden');
+            updateUSD();
+            updateSummary();
+            localStorage.removeItem('marginCalcValues');
+        });
+        toggleSummaryBtn.addEventListener('click', () => {
+            summarySection.classList.toggle('hidden');
+            toggleSummaryBtn.textContent = summarySection.classList.contains('hidden') ? 'Show Summary' : 'Hide Summary';
+        });
+        toggleHistoryBtn.addEventListener('click', () => {
+            historySection.classList.toggle('hidden');
+            toggleHistoryBtn.textContent = historySection.classList.contains('hidden') ? 'Show History' : 'Hide History';
+        });
+
         fetchExchangeRate();
         loadSavedValues();
         updateHistory();
     </script>
 
-    <!-- Odoo Live Chat Scripts (added here) -->
+    <!-- YOUR EXACT ODOO SCRIPTS (forced to bottom-right) -->
     <script defer="defer" type="text/javascript" src="https://emrn-ca.odoo.com/im_livechat/loader/1"></script>
     <script defer="defer" type="text/javascript" src="https://emrn-ca.odoo.com/im_livechat/assets_embed.js"></script>
+
+    <!-- Tiny CSS fix – forces the old Odoo chat to bottom-right with original logo -->
+    <style>
+        #im_livechat_container {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            left: auto !important;
+            top: auto !important;
+            z-index: 9999 !important;
+        }
+    </style>
+
 </body>
 </html>

@@ -231,23 +231,42 @@ function handleFirebaseUser(user) {
   }
 }
 
-function showError(message) {
-  if (authError) {
-    authError.textContent = message;
-    authError.classList.remove('hidden');
-  }
-  if (authMessage) {
-    authMessage.classList.add('hidden');
+function showSignInError(message) {
+  if (signInError) {
+    signInError.textContent = message;
+    signInError.classList.remove('hidden');
   }
 }
 
-function showMessage(message) {
-  if (authMessage) {
-    authMessage.textContent = message;
-    authMessage.classList.remove('hidden');
+function showSignUpError(message) {
+  if (signUpError) {
+    signUpError.textContent = message;
+    signUpError.classList.remove('hidden');
+    if (signUpMessage) signUpMessage.classList.add('hidden');
   }
-  if (authError) {
-    authError.classList.add('hidden');
+}
+
+function showSignUpMessage(message) {
+  if (signUpMessage) {
+    signUpMessage.textContent = message;
+    signUpMessage.classList.remove('hidden');
+    if (signUpError) signUpError.classList.add('hidden');
+  }
+}
+
+function showForgotPasswordError(message) {
+  if (forgotPasswordError) {
+    forgotPasswordError.textContent = message;
+    forgotPasswordError.classList.remove('hidden');
+    if (forgotPasswordMessage) forgotPasswordMessage.classList.add('hidden');
+  }
+}
+
+function showForgotPasswordMessage(message) {
+  if (forgotPasswordMessage) {
+    forgotPasswordMessage.textContent = message;
+    forgotPasswordMessage.classList.remove('hidden');
+    if (forgotPasswordError) forgotPasswordError.classList.add('hidden');
   }
 }
 

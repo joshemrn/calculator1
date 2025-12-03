@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
     
@@ -138,12 +139,30 @@
   <div class="w-full max-w-5xl mx-auto px-4">
     <!-- Header -->
     <header class="mb-8">
-      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline mb-4">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 18l-6-6 6-6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
+      <div class="flex justify-between items-start mb-4">
+        <a href="index.html" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18l-6-6 6-6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a>
+        
+        <!-- User Profile / Sign In -->
+        <div id="user-section">
+          <!-- Sign In Button (shown when not logged in) -->
+          <div id="sign-in-button"></div>
+          
+          <!-- User Profile (shown when logged in) -->
+          <div id="user-profile" class="hidden flex items-center gap-3">
+            <img id="user-photo" class="w-10 h-10 rounded-full border-2 border-indigo-200" alt="User photo">
+            <div>
+              <div id="user-name" class="text-sm font-semibold text-slate-800"></div>
+              <button id="sign-out-btn" class="text-xs text-indigo-600 hover:underline">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <h1 class="text-4xl font-bold text-slate-800">Pricing Formula Calculator</h1>
       <p class="text-slate-600 mt-2">Calculate product pricing with CAD/USD support, custom margins, and detailed breakdowns. <span class="text-xs text-slate-500">Based on Pricing Formula.xlsx</span></p>
     </header>
@@ -388,6 +407,10 @@
   </div>
 
   <script>
+    // Google Sign-In Configuration
+    const CLIENT_ID = '177744902464-nrlnvqafdvc2ftma22ib1a10pfrq9o3t.apps.googleusercontent.com';
+    let currentUser = null;
+    
     // DOM Elements
     const costInput = document.getElementById('cost-input');
     const currencyCadBtn = document.getElementById('currency-cad');
@@ -405,6 +428,10 @@
     const exchangeRateValue = document.getElementById('exchange-rate-value');
     const rateTimestamp = document.getElementById('rate-timestamp');
     const refreshRateBtn = document.getElementById('refresh-rate-btn');
+    const signOutBtn = document.getElementById('sign-out-btn');
+    const userProfile = document.getElementById('user-profile');
+    const userName = document.getElementById('user-name');
+    const userPhoto = document.getElementById('user-photo');
     const marginInputs = {
       a: document.getElementById('margin-a'),
       b: document.getElementById('margin-b'),
@@ -425,6 +452,7 @@
     toggleBreakdownBtn.addEventListener('click', toggleBreakdown);
     clearHistoryBtn.addEventListener('click', clearHistory);
     refreshRateBtn.addEventListener('click', fetchExchangeRate);
+    signOutBtn.addEventListener('click', signOut);
     costInput.addEventListener('input', calculate);
     costInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') calculate();
@@ -435,6 +463,105 @@
     marginInputs.b.addEventListener('input', calculate);
     marginInputs.c.addEventListener('input', calculate);
     marginInputs.website.addEventListener('input', calculate);
+
+    // Google Sign-In Functions
+    function initializeGoogleSignIn() {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+      
+      google.accounts.id.renderButton(
+        document.getElementById('sign-in-button'),
+        { 
+          theme: 'outline', 
+          size: 'large',
+          text: 'signin_with',
+          shape: 'rectangular'
+        }
+      );
+    }
+
+    function handleCredentialResponse(response) {
+      const responsePayload = parseJwt(response.credential);
+      
+      currentUser = {
+        id: responsePayload.sub,
+        name: responsePayload.name,
+        email: responsePayload.email,
+        picture: responsePayload.picture
+      };
+      
+      // Update UI
+      userName.textContent = currentUser.name;
+      userPhoto.src = currentUser.picture;
+      document.getElementById('sign-in-button').classList.add('hidden');
+      userProfile.classList.remove('hidden');
+      userProfile.classList.add('flex');
+      
+      // Load user data from cloud
+      loadUserData();
+    }
+
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    function signOut() {
+      currentUser = null;
+      document.getElementById('sign-in-button').classList.remove('hidden');
+      userProfile.classList.add('hidden');
+      userProfile.classList.remove('flex');
+      
+      // Revert to local storage
+      calculations = JSON.parse(localStorage.getItem('pricingHistory')) || [];
+      renderHistory();
+    }
+
+    function loadUserData() {
+      // Load user's saved data from localStorage with user ID prefix
+      const userKey = `pricing_${currentUser.id}`;
+      const userData = localStorage.getItem(userKey);
+      
+      if (userData) {
+        const data = JSON.parse(userData);
+        calculations = data.history || [];
+        
+        // Load saved preferences
+        if (data.preferences) {
+          marginInputs.a.value = data.preferences.marginA || '30';
+          marginInputs.b.value = data.preferences.marginB || '40';
+          marginInputs.c.value = data.preferences.marginC || '40';
+          marginInputs.website.value = data.preferences.marginWebsite || '40';
+          currentCurrency = data.preferences.currency || 'CAD';
+          setCurrency(currentCurrency);
+        }
+        
+        renderHistory();
+      }
+    }
+
+    function saveUserData() {
+      if (currentUser) {
+        const userKey = `pricing_${currentUser.id}`;
+        const userData = {
+          history: calculations,
+          preferences: {
+            marginA: marginInputs.a.value,
+            marginB: marginInputs.b.value,
+            marginC: marginInputs.c.value,
+            marginWebsite: marginInputs.website.value,
+            currency: currentCurrency
+          }
+        };
+        localStorage.setItem(userKey, JSON.stringify(userData));
+      }
+    }
 
     // Set Currency
     function setCurrency(currency) {
@@ -594,7 +721,14 @@
     function saveToHistory(calc) {
       calculations.unshift(calc);
       if (calculations.length > 20) calculations.pop();
-      localStorage.setItem('pricingHistory', JSON.stringify(calculations));
+      
+      // Save to user-specific storage if signed in, otherwise local storage
+      if (currentUser) {
+        saveUserData();
+      } else {
+        localStorage.setItem('pricingHistory', JSON.stringify(calculations));
+      }
+      
       renderHistory();
     }
 
@@ -630,7 +764,13 @@
     function clearHistory() {
       if (confirm('Are you sure you want to clear all history?')) {
         calculations = [];
-        localStorage.removeItem('pricingHistory');
+        
+        if (currentUser) {
+          saveUserData();
+        } else {
+          localStorage.removeItem('pricingHistory');
+        }
+        
         renderHistory();
       }
     }
@@ -666,6 +806,10 @@
     }
 
     // Initialize
+    window.onload = function() {
+      initializeGoogleSignIn();
+    };
+    
     loadExchangeRate();
     fetchExchangeRate(); // Fetch fresh rate on page load
     renderHistory();

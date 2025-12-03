@@ -57,7 +57,23 @@ const firebaseConfig = {
 3. Add: `joshemrn.github.io`
 4. Click "Add"
 
-### Step 6: Test
+### Step 6: Configure Email Action Handler (Important!)
+
+This ensures users are redirected back to your website after email verification.
+
+1. In Firebase Console → Authentication → Templates
+2. Click on "Email address verification"
+3. In the "Action URL" field, you should see the default Firebase URL
+4. The code is already configured to redirect users back to your page automatically
+5. Make sure your domain (`joshemrn.github.io`) is in the Authorized domains list
+
+**Note:** When users click the verification link in their email, they will:
+- Be redirected to Firebase's verification page
+- See a confirmation message
+- Be automatically redirected back to your website
+- Be able to sign in with their verified account
+
+### Step 7: Test
 
 1. Commit and push changes to GitHub
 2. Visit https://joshemrn.github.io/calculator1/pricing-calculator.html

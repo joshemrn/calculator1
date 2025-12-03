@@ -126,7 +126,14 @@ async function signUpWithEmail() {
   
   try {
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    await userCredential.user.sendEmailVerification();
+    
+    // Configure email verification with redirect URL
+    const actionCodeSettings = {
+      url: window.location.origin + window.location.pathname,
+      handleCodeInApp: false
+    };
+    
+    await userCredential.user.sendEmailVerification(actionCodeSettings);
     showSignUpMessage('Account created! Please check your email to verify your account before signing in.');
     signUpEmail.value = '';
     signUpPassword.value = '';
@@ -172,7 +179,13 @@ async function resetPassword() {
   }
   
   try {
-    await auth.sendPasswordResetEmail(email);
+    // Configure password reset with redirect URL
+    const actionCodeSettings = {
+      url: window.location.origin + window.location.pathname,
+      handleCodeInApp: false
+    };
+    
+    await auth.sendPasswordResetEmail(email, actionCodeSettings);
     showForgotPasswordMessage('Password reset email sent! Please check your inbox.');
     forgotPasswordEmail.value = '';
   } catch (error) {

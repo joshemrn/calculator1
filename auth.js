@@ -55,10 +55,10 @@ if (signOutBtn) signOutBtn.addEventListener('click', signOut);
 if (signInBtn) signInBtn.addEventListener('click', signInWithEmail);
 if (signUpBtn) signUpBtn.addEventListener('click', signUpWithEmail);
 if (resetPasswordBtn) resetPasswordBtn.addEventListener('click', resetPassword);
-if (showSignUpLink) showSignUpLink.addEventListener('click', () => showSection('sign-up'));
-if (showSignInLink) showSignInLink.addEventListener('click', () => showSection('sign-in'));
-if (showForgotPasswordLink) showForgotPasswordLink.addEventListener('click', () => showSection('forgot-password'));
-if (backToSignInLink) backToSignInLink.addEventListener('click', () => showSection('sign-in'));
+if (showSignUpLink) showSignUpLink.addEventListener('click', (e) => { e.preventDefault(); showSection('sign-up'); });
+if (showSignInLink) showSignInLink.addEventListener('click', (e) => { e.preventDefault(); showSection('sign-in'); });
+if (showForgotPasswordLink) showForgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); showSection('forgot-password'); });
+if (backToSignInLink) backToSignInLink.addEventListener('click', (e) => { e.preventDefault(); showSection('sign-in'); });
 
 // Handle Enter key on password fields
 if (signInPassword) signInPassword.addEventListener('keypress', (e) => { if (e.key === 'Enter') signInWithEmail(); });
@@ -143,10 +143,16 @@ async function signUpWithEmail() {
 }
 
 async function signInWithEmail() {
-  if (!signInEmail || !signInPassword) return;
+  console.log('Sign in button clicked');
+  if (!signInEmail || !signInPassword) {
+    console.log('Elements not found:', { signInEmail, signInPassword });
+    return;
+  }
   
   const email = signInEmail.value.trim();
   const password = signInPassword.value;
+  
+  console.log('Sign in attempt:', email);
   
   if (!email || !password) {
     showSignInError('Please enter both email and password');
@@ -155,6 +161,7 @@ async function signInWithEmail() {
   
   try {
     const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    console.log('Sign in successful, checking verification...');
     
     if (!userCredential.user.emailVerified) {
       showSignInError('Please verify your email before signing in. Check your inbox for the verification link.');
@@ -164,6 +171,7 @@ async function signInWithEmail() {
     
     // User will be handled by onAuthStateChanged
   } catch (error) {
+    console.error('Sign in error:', error);
     showSignInError(error.message);
   }
 }

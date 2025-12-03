@@ -314,6 +314,7 @@ function initializeGoogleSignIn() {
 }
 
 function handleCredentialResponse(response) {
+  console.log('Google Sign-In credential received');
   const responsePayload = parseJwt(response.credential);
   
   if (!responsePayload.email_verified) {
@@ -321,33 +322,21 @@ function handleCredentialResponse(response) {
     return;
   }
   
-  currentUser = {
-    id: responsePayload.sub,
-    name: responsePayload.name,
-    email: responsePayload.email,
-    picture: responsePayload.picture,
-    emailVerified: responsePayload.email_verified
-  };
+  // Sign in to Firebase with Google credential
+  const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
   
-  if (userName) userName.textContent = currentUser.name;
-  if (userPhoto) userPhoto.src = currentUser.picture;
-  
-  const signInButton = document.getElementById('sign-in-button');
-  if (signInButton) signInButton.classList.add('hidden');
-  if (userProfile) {
-    userProfile.classList.remove('hidden');
-    userProfile.classList.add('flex');
-  }
-  
-  const signInRequired = document.getElementById('sign-in-required');
-  const calculatorContent = document.getElementById('calculator-content');
-  if (signInRequired) signInRequired.classList.add('hidden');
-  if (calculatorContent) calculatorContent.classList.remove('hidden');
-  
-  // Call page-specific initialization if available
-  if (typeof onUserAuthenticated === 'function') {
-    onUserAuthenticated(currentUser);
-  }
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+      return auth.signInWithCredential(credential);
+    })
+    .then((result) => {
+      console.log('Google sign-in successful, Firebase user created');
+      // User will be handled by onAuthStateChanged
+    })
+    .catch((error) => {
+      console.error('Google sign-in error:', error);
+      alert('Sign-in failed: ' + error.message);
+    });
 }
 
 function parseJwt(token) {

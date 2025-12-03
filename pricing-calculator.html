@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing Formula Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+    
+    .tooltip-icon {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background: #4F46E5;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 18px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: help;
+      position: relative;
+    }
+    
+    .tooltip-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1F2937;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1000;
+      font-weight: normal;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .currency-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .currency-badge.cad {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+    
+    .currency-badge.usd {
+      background: #DCFCE7;
+      color: #166534;
+    }
+    
+    .result-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .result-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+    
+    .result-label {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .result-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 4px;
+    }
+    
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+    
+    .breakdown-item:last-child {
+      border-bottom: none;
+    }
+    
+    .breakdown-label {
+      color: #64748b;
+    }
+    
+    .breakdown-value {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .history-item {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .history-item:hover {
+      background: #f1f5f9;
+      border-left-color: #4F46E5;
+    }
+    
+    .history-item.cad {
+      border-left-color: #3B82F6;
+    }
+    
+    .history-item.usd {
+      border-left-color: #10B981;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+  <div class="w-full max-w-5xl mx-auto px-4">
+    <!-- Header -->
+    <header class="mb-8">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+      <h1 class="text-4xl font-bold text-slate-800">Pricing Formula Calculator</h1>
+      <p class="text-slate-600 mt-2">Calculate product pricing with CAD/USD support, custom margins, and detailed breakdowns. <span class="text-xs text-slate-500">Based on Pricing Formula.xlsx</span></p>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid gap-8 lg:grid-cols-2">
+      
+      <!-- Input Section -->
+      <div>
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          
+          <!-- Currency Selector -->
+          <div class="mb-8">
+            <label class="block text-sm font-semibold text-slate-700 mb-4">Currency</label>
+            <div class="flex gap-4">
+              <button id="currency-cad" class="flex-1 py-3 px-4 rounded-lg border-2 border-blue-500 bg-blue-50 text-blue-700 font-semibold transition hover:bg-blue-100 flex items-center justify-center gap-2" aria-pressed="true">
+                <span class="currency-badge cad">CAD</span>
+                Canada
+              </button>
+              <button id="currency-usd" class="flex-1 py-3 px-4 rounded-lg border-2 border-gray-300 bg-white text-slate-600 font-semibold transition hover:bg-gray-50 flex items-center justify-center gap-2" aria-pressed="false">
+                <span class="currency-badge usd">USD</span>
+                United States
+              </button>
+            </div>
+            
+            <!-- Exchange Rate Display (shown only for USD) -->
+            <div id="exchange-rate-display" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div class="text-sm">
+                  <span class="font-semibold text-green-800">Exchange Rate:</span>
+                  <span class="text-green-900 ml-2">1 USD = <span id="exchange-rate-value">1.4000</span> CAD</span>
+                </div>
+                <button id="refresh-rate-btn" class="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                  Refresh
+                </button>
+              </div>
+              <div class="text-xs text-green-600 mt-1" id="rate-timestamp">Last updated: --</div>
+            </div>
+          </div>
+
+          <!-- Cost Input -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+              Cost (Base Price)
+              <div class="tooltip-icon" data-tooltip="The base cost of the product before fees and markup">?</div>
+            </label>
+            <div class="flex items-center gap-2">
+              <span id="currency-symbol" class="text-2xl font-bold text-slate-600">$</span>
+              <input 
+                type="number" 
+                id="cost-input" 
+                step="0.01" 
+                min="0" 
+                placeholder="Enter cost amount"
+                class="flex-1 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg"
+                aria-label="Cost input"
+              >
+            </div>
+            <p id="cost-error" class="text-red-500 text-sm mt-2 hidden flex items-center gap-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Cost must be a positive number
+            </p>
+          </div>
+
+          <!-- Margins Section -->
+          <div class="mb-8 p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <h3 class="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+              Custom Margins (%)
+              <div class="tooltip-icon" data-tooltip="Adjust profit margins for each pricing tier">?</div>
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price A Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-a" 
+                  value="30" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Price A margin percentage"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price B Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-b" 
+                  value="40" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Price B margin percentage"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price C Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-c" 
+                  value="40" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Price C margin percentage"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Website Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-website" 
+                  value="40" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Website margin percentage"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-4">
+            <button 
+              id="calculate-btn"
+              class="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2 shadow-md"
+              aria-label="Calculate pricing"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 7h6M9 13h6M9 19h6M3 7h2M3 13h2M3 19h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Calculate
+            </button>
+            <button 
+              id="reset-btn"
+              class="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg font-semibold hover:bg-slate-300 transition"
+              aria-label="Reset form"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results & History Section -->
+      <div>
+        
+        <!-- Results Card -->
+        <div id="results-section" class="bg-white rounded-2xl shadow-lg p-8 hidden">
+          <h2 class="text-lg font-bold text-slate-800 mb-6">Pricing Results</h2>
+          
+          <!-- Price A -->
+          <div class="result-card" style="background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%); border: 2px solid #4F46E5; box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);">
+            <div class="result-label" style="color: #4F46E5; font-weight: 600;">Price A</div>
+            <div class="result-value" style="color: #4F46E5; font-size: 28px;" id="result-price-a">$0.00</div>
+            <div class="text-xs text-slate-500 mt-2" id="result-margin-a">30% margin</div>
+          </div>
+
+          <!-- Website Price -->
+          <div class="result-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fcd34d;">
+            <div class="result-label" style="color: #92400e;">price b, c, website</div>
+            <div class="result-value" style="color: #b45309;" id="result-website-price">$0.00</div>
+            <div class="text-xs" style="color: #ca8a04; margin-top: 2px;" id="result-margin-website">40% margin</div>
+          </div>
+
+          <!-- Price B -->
+          <div class="result-card" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border: 2px solid #0284c7; box-shadow: 0 8px 16px rgba(2, 132, 199, 0.2);">
+            <div class="result-label" style="color: #0284c7; font-weight: 600;">25% margin</div>
+            <div class="result-value" style="color: #0284c7; font-size: 28px;" id="result-price-b">$0.00</div>
+            <div class="text-xs text-slate-500 mt-2" id="result-margin-b">25% margin</div>
+          </div>
+
+          <!-- Price C -->
+          <div class="result-card">
+            <div class="result-label">20% margin</div>
+            <div class="result-value" id="result-price-c">$0.00</div>
+            <div class="text-xs text-slate-500 mt-2" id="result-margin-c">20% margin</div>
+          </div>
+
+          <!-- Breakdown Toggle -->
+          <button 
+            id="toggle-breakdown"
+            class="w-full mt-6 text-sm text-indigo-600 font-semibold hover:underline flex items-center justify-center gap-2"
+            aria-expanded="false"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="breakdown-icon">
+              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Show Cost Breakdown
+          </button>
+
+          <!-- Breakdown Details -->
+          <div id="breakdown-section" class="hidden mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 mb-4 uppercase tracking-wide">Cost Breakdown</h4>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Base Cost</span>
+              <span class="breakdown-value" id="breakdown-cost">$0.00</span>
+            </div>
+            <div class="breakdown-item">
+              <span class="breakdown-label" id="breakdown-label-1">Shipping (3%)</span>
+              <span class="breakdown-value" id="breakdown-fee-1">$0.00</span>
+            </div>
+            <div class="breakdown-item" style="border-bottom: 2px solid #cbd5e1; border-top: 2px solid #cbd5e1; padding: 12px 0;">
+              <span class="breakdown-label font-semibold">Total Cost</span>
+              <span class="breakdown-value text-lg" id="breakdown-total">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="history-panel" class="bg-white rounded-2xl shadow-lg p-8 mt-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-800">History</h3>
+            <button 
+              id="clear-history-btn"
+              class="text-xs text-slate-500 hover:text-slate-700 px-2 py-1 hover:bg-slate-100 rounded transition"
+              aria-label="Clear history"
+            >
+              Clear
+            </button>
+          </div>
+          <ul id="history-list" class="space-y-2 max-h-64 overflow-y-auto">
+            <li class="text-sm text-slate-500 italic">No calculations yet</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-sm text-slate-600">
+      <p>Based on <strong>Pricing Formula.xlsx</strong> — customize margins and formulas as needed for your business.</p>
+      <p class="mt-2 text-xs text-slate-500">All calculations are performed locally in your browser. History is saved to localStorage.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // DOM Elements
+    const costInput = document.getElementById('cost-input');
+    const currencyCadBtn = document.getElementById('currency-cad');
+    const currencyUsdBtn = document.getElementById('currency-usd');
+    const currencySymbol = document.getElementById('currency-symbol');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const costError = document.getElementById('cost-error');
+    const resultsSection = document.getElementById('results-section');
+    const toggleBreakdownBtn = document.getElementById('toggle-breakdown');
+    const breakdownSection = document.getElementById('breakdown-section');
+    const historyList = document.getElementById('history-list');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    const exchangeRateDisplay = document.getElementById('exchange-rate-display');
+    const exchangeRateValue = document.getElementById('exchange-rate-value');
+    const rateTimestamp = document.getElementById('rate-timestamp');
+    const refreshRateBtn = document.getElementById('refresh-rate-btn');
+    const marginInputs = {
+      a: document.getElementById('margin-a'),
+      b: document.getElementById('margin-b'),
+      c: document.getElementById('margin-c'),
+      website: document.getElementById('margin-website')
+    };
+
+    // State
+    let currentCurrency = 'CAD';
+    let calculations = JSON.parse(localStorage.getItem('pricingHistory')) || [];
+    let exchangeRate = parseFloat(localStorage.getItem('pricing_exchange_rate')) || 1.4;
+
+    // Event Listeners
+    currencyCadBtn.addEventListener('click', () => setCurrency('CAD'));
+    currencyUsdBtn.addEventListener('click', () => setCurrency('USD'));
+    calculateBtn.addEventListener('click', calculate);
+    resetBtn.addEventListener('click', reset);
+    toggleBreakdownBtn.addEventListener('click', toggleBreakdown);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    refreshRateBtn.addEventListener('click', fetchExchangeRate);
+    costInput.addEventListener('input', calculate);
+    costInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') calculate();
+    });
+    
+    // Auto-calculate when margins change
+    marginInputs.a.addEventListener('input', calculate);
+    marginInputs.b.addEventListener('input', calculate);
+    marginInputs.c.addEventListener('input', calculate);
+    marginInputs.website.addEventListener('input', calculate);
+
+    // Set Currency
+    function setCurrency(currency) {
+      currentCurrency = currency;
+      
+      if (currency === 'CAD') {
+        currencyCadBtn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+        currencyCadBtn.classList.remove('border-gray-300', 'bg-white', 'text-slate-600');
+        currencyUsdBtn.classList.add('border-gray-300', 'bg-white', 'text-slate-600');
+        currencyUsdBtn.classList.remove('border-green-500', 'bg-green-50', 'text-green-700');
+        currencySymbol.textContent = '$';
+        currencyCadBtn.setAttribute('aria-pressed', 'true');
+        currencyUsdBtn.setAttribute('aria-pressed', 'false');
+        exchangeRateDisplay.classList.add('hidden');
+      } else {
+        currencyCadBtn.classList.add('border-gray-300', 'bg-white', 'text-slate-600');
+        currencyCadBtn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
+        currencyUsdBtn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+        currencyUsdBtn.classList.remove('border-gray-300', 'bg-white', 'text-slate-600');
+        currencySymbol.textContent = 'US$';
+        currencyCadBtn.setAttribute('aria-pressed', 'false');
+        currencyUsdBtn.setAttribute('aria-pressed', 'true');
+        exchangeRateDisplay.classList.remove('hidden');
+      }
+      
+      costInput.focus();
+      
+      // Auto-calculate if there's a value
+      if (costInput.value) {
+        calculate();
+      }
+    }
+
+    // Exchange Rate Functions
+    async function fetchExchangeRate() {
+      try {
+        const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=CAD');
+        const data = await res.json();
+        if (data && data.rates && data.rates.CAD) {
+          exchangeRate = parseFloat(data.rates.CAD);
+          localStorage.setItem('pricing_exchange_rate', exchangeRate);
+          const now = new Date();
+          localStorage.setItem('pricing_exchange_time', now.toISOString());
+          // Update UI
+          exchangeRateValue.textContent = exchangeRate.toFixed(4);
+          rateTimestamp.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+      } catch (err) {
+        console.error('Exchange rate fetch failed:', err);
+      }
+    }
+
+    function loadExchangeRate() {
+      const cached = localStorage.getItem('pricing_exchange_rate');
+      const cachedTime = localStorage.getItem('pricing_exchange_time');
+      if (cached) {
+        exchangeRate = parseFloat(cached);
+        exchangeRateValue.textContent = exchangeRate.toFixed(4);
+        if (cachedTime) {
+          const date = new Date(cachedTime);
+          rateTimestamp.textContent = `Last updated: ${date.toLocaleTimeString()}`;
+        }
+      }
+    }
+
+    // Calculate Pricing
+    function calculate() {
+      console.log('Calculate function called');
+      costError.classList.add('hidden');
+      
+      const cost = parseFloat(costInput.value);
+      console.log('Cost value:', cost);
+      
+      if (isNaN(cost) || cost < 0) {
+        costError.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+        return;
+      }
+
+      if (cost === 0) {
+        resultsSection.classList.add('hidden');
+        return;
+      }
+
+      // Get margins
+      const margins = {
+        a: parseFloat(marginInputs.a.value) / 100,
+        b: parseFloat(marginInputs.b.value) / 100,
+        c: parseFloat(marginInputs.c.value) / 100,
+        website: parseFloat(marginInputs.website.value) / 100
+      };
+
+      // Calculate Total Cost based on currency
+      let totalCost;
+      let breakdown = {};
+
+      if (currentCurrency === 'CAD') {
+        const shippingFee = cost * 0.03;
+        totalCost = cost + shippingFee;
+        breakdown = {
+          cost: cost,
+          shipping: shippingFee,
+          label1: 'Shipping (3%)'
+        };
+      } else {
+        // Convert USD to CAD
+        const convertedCost = cost * exchangeRate;
+        const shippingFee = convertedCost * 0.04;
+        totalCost = convertedCost + shippingFee;
+        breakdown = {
+          cost: convertedCost,
+          shipping: shippingFee,
+          label1: 'Shipping (4%)'
+        };
+      }
+
+      // Calculate Prices with margins
+      const priceA = totalCost / (1 - margins.a);
+      const priceB = totalCost / (1 - margins.b);
+      const priceC = totalCost / (1 - margins.c);
+      const websitePrice = priceA / 0.90;  // Price A divided by 90% for additional margin
+
+      // Display Results (always in CAD)
+      document.getElementById('result-price-a').textContent = 'CAD $' + priceA.toFixed(2);
+      document.getElementById('result-price-b').textContent = 'CAD $' + priceB.toFixed(2);
+      document.getElementById('result-price-c').textContent = 'CAD $' + priceC.toFixed(2);
+      document.getElementById('result-website-price').textContent = 'CAD $' + websitePrice.toFixed(2);
+
+      document.getElementById('result-margin-a').textContent = `${(margins.a * 100).toFixed(1)}% margin`;
+      document.getElementById('result-margin-b').textContent = `${(margins.b * 100).toFixed(1)}% margin`;
+      document.getElementById('result-margin-c').textContent = `${(margins.c * 100).toFixed(1)}% margin`;
+      document.getElementById('result-margin-website').textContent = `${(margins.website * 100).toFixed(1)}% margin`;
+
+      // Update Breakdown
+      document.getElementById('breakdown-cost').textContent = 'CAD $' + breakdown.cost.toFixed(2);
+      document.getElementById('breakdown-label-1').textContent = breakdown.label1;
+      document.getElementById('breakdown-fee-1').textContent = 'CAD $' + breakdown.shipping.toFixed(2);
+      document.getElementById('breakdown-total').textContent = 'CAD $' + totalCost.toFixed(2);
+
+      resultsSection.classList.remove('hidden');
+      
+      // Save to history
+      saveToHistory({
+        currency: currentCurrency,
+        cost: cost,
+        priceA: priceA,
+        priceB: priceB,
+        priceC: priceC,
+        websitePrice: websitePrice,
+        totalCost: totalCost,
+        margins: margins,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+    }
+
+    // Save to History
+    function saveToHistory(calc) {
+      calculations.unshift(calc);
+      if (calculations.length > 20) calculations.pop();
+      localStorage.setItem('pricingHistory', JSON.stringify(calculations));
+      renderHistory();
+    }
+
+    // Render History
+    function renderHistory() {
+      if (calculations.length === 0) {
+        historyList.innerHTML = '<li class="text-sm text-slate-500 italic">No calculations yet</li>';
+        return;
+      }
+
+      historyList.innerHTML = calculations.map((calc, idx) => `
+        <li class="history-item ${calc.currency.toLowerCase()}" onclick="loadFromHistory(${idx})" title="Click to load">
+          <div class="font-semibold text-slate-800">${calc.currency} • ${formatCurrency(calc.cost)}</div>
+          <div class="text-xs text-slate-600 mt-1">A: ${formatCurrency(calc.priceA)} • B: ${formatCurrency(calc.priceB)} • C: ${formatCurrency(calc.priceC)}</div>
+          <div class="text-xs text-slate-500 mt-1">${calc.timestamp}</div>
+        </li>
+      `).join('');
+    }
+
+    // Load from History
+    window.loadFromHistory = function(idx) {
+      const calc = calculations[idx];
+      setCurrency(calc.currency);
+      costInput.value = calc.cost;
+      marginInputs.a.value = (calc.margins.a * 100).toFixed(1);
+      marginInputs.b.value = (calc.margins.b * 100).toFixed(1);
+      marginInputs.c.value = (calc.margins.c * 100).toFixed(1);
+      marginInputs.website.value = (calc.margins.website * 100).toFixed(1);
+      calculate();
+    };
+
+    // Clear History
+    function clearHistory() {
+      if (confirm('Are you sure you want to clear all history?')) {
+        calculations = [];
+        localStorage.removeItem('pricingHistory');
+        renderHistory();
+      }
+    }
+
+    // Toggle Breakdown
+    function toggleBreakdown() {
+      const isHidden = breakdownSection.classList.contains('hidden');
+      if (isHidden) {
+        breakdownSection.classList.remove('hidden');
+        toggleBreakdownBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        breakdownSection.classList.add('hidden');
+        toggleBreakdownBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    // Reset Form
+    function reset() {
+      costInput.value = '';
+      marginInputs.a.value = '30';
+      marginInputs.b.value = '40';
+      marginInputs.c.value = '40';
+      marginInputs.website.value = '40';
+      resultsSection.classList.add('hidden');
+      breakdownSection.classList.add('hidden');
+      costError.classList.add('hidden');
+      costInput.focus();
+    }
+
+    // Format Currency
+    function formatCurrency(value) {
+      return 'CAD $' + value.toFixed(2);
+    }
+
+    // Initialize
+    loadExchangeRate();
+    fetchExchangeRate(); // Fetch fresh rate on page load
+    renderHistory();
+    costInput.focus();
+  </script>
+</body>
+</html>

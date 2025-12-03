@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Calculators — Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-neutral-50 to-sky-50 text-slate-800">
+  <header class="max-w-5xl mx-auto py-12 px-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-indigo-600">
+          <rect width="24" height="24" rx="6" fill="#EEF2FF"/>
+          <path d="M7 8h10M7 12h6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h1 class="text-3xl font-extrabold">Calculator Collection</h1>
+      </div>
+      <nav class="space-x-4">
+        <a href="./margin-calculator.html" class="text-sm font-medium text-indigo-600 hover:underline">Margin Calculator</a>
+        <a href="./pricing-calculator.html" class="text-sm font-medium text-indigo-600 hover:underline">Pricing Formula</a>
+      </nav>
+    </div>
+    <p class="mt-4 text-slate-600 max-w-2xl">A small, clean collection of lightweight calculators — click a card to open it. I'll add more types (loan, VAT, ROI) soon.</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 pb-20">
+    <section class="grid gap-6 sm:grid-cols-2">
+      <a href="./margin-calculator.html" class="group block bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transform hover:-translate-y-1 transition">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-800 flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+                <circle cx="12" cy="12" r="10" fill="#EEF2FF"/>
+                <path d="M8 12h8M8 16h4" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Margin & Revenue
+            </h2>
+            <p class="mt-2 text-slate-600">Calculate margin, revenue and cost with live USD conversion. Stores recent entries locally.</p>
+          </div>
+          <div class="opacity-0 group-hover:opacity-100 transition text-indigo-500">→</div>
+        </div>
+      </a>
+
+      <a href="./pricing-calculator.html" class="group block bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transform hover:-translate-y-1 transition">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-800 flex items-center gap-3">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5m-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11m3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5" fill="#4F46E5"/>
+              </svg>
+              Pricing Formula
+            </h2>
+            <p class="mt-2 text-slate-600">CAD & USD pricing: no fixed fees, shipping 3%/4%, custom margins, live exchange rate, calculation history with margin persistence.</p>
+          </div>
+          <div class="opacity-0 group-hover:opacity-100 transition text-indigo-500">→</div>
+        </div>
+      </a>
+
+      <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition">
+        <div>
+          <h3 class="text-xl font-semibold">More Calculators Coming</h3>
+          <p class="mt-2 text-slate-600">Planned: Loan, VAT, ROI calculators and small tools. I'll add them here as separate pages.</p>
+        </div>
+        <div class="mt-4 text-sm text-slate-500">Stay tuned</div>
+      </div>
+    </section>
+
+    <footer class="mt-10 text-sm text-slate-500">
+      <p>Local preview: open `margin-calculator.html` in a browser or use VS Code Live Server.</p>
+    </footer>
+  </main>
+</body>
+</html>

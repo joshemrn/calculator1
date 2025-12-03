@@ -12,6 +12,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Enable session persistence (stay signed in across browser sessions)
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
 // Google Sign-In Configuration
 const CLIENT_ID = '177744902464-nrlnvqafdvc2ftma22ib1a10pfrq9o3t.apps.googleusercontent.com';
 let currentUser = null;

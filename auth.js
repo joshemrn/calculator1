@@ -12,8 +12,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Enable session persistence (stay signed in across browser sessions)
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+// Set persistence to LOCAL (default behavior - user stays logged in)
+// This ensures users remain authenticated across browser sessions
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
+  console.error('Error setting persistence:', error);
+});
 
 // Google Sign-In Configuration
 const CLIENT_ID = '177744902464-nrlnvqafdvc2ftma22ib1a10pfrq9o3t.apps.googleusercontent.com';
@@ -102,11 +105,22 @@ function clearForgotPasswordErrors() {
 
 // Firebase Auth State Observer
 auth.onAuthStateChanged((user) => {
+  console.log('Auth state changed:', user ? user.email : 'No user');
+  
   if (user && user.emailVerified) {
+    console.log('User is verified, showing content');
     handleFirebaseUser(user);
   } else if (user && !user.emailVerified) {
+    console.log('User not verified');
     showSignInError('Please verify your email address. Check your inbox for the verification link.');
     auth.signOut();
+  } else {
+    console.log('No user signed in');
+    // Show sign-in screen when no user is signed in
+    const signInRequired = document.getElementById('sign-in-required');
+    const calculatorContent = document.getElementById('calculator-content');
+    if (signInRequired) signInRequired.classList.remove('hidden');
+    if (calculatorContent) calculatorContent.classList.add('hidden');
   }
 });
 

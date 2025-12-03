@@ -335,7 +335,11 @@ function handleCredentialResponse(response) {
     })
     .catch((error) => {
       console.error('Google sign-in error:', error);
-      alert('Sign-in failed: ' + error.message);
+      if (error.code === 'auth/operation-not-allowed') {
+        alert('Google Sign-In is not enabled in Firebase Console.\n\nPlease enable it:\n1. Go to Firebase Console\n2. Authentication → Sign-in method\n3. Enable Google provider\n\nOr use Email/Password sign-in instead.');
+      } else {
+        alert('Sign-in failed: ' + error.message);
+      }
     });
 }
 

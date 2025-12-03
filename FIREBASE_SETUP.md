@@ -20,11 +20,14 @@ Your calculator now supports **Email/Password** and **Google Sign-In** authentic
    - Click on "Email/Password"
    - Toggle "Enable"
    - Click "Save"
-5. Enable **Google**:
+5. Enable **Google** (REQUIRED):
    - Click on "Google"
    - Toggle "Enable"
-   - Select a support email
+   - Select a support email from the dropdown
+   - **Important:** This must be enabled for Google Sign-In to work with Firebase
    - Click "Save"
+
+**Note:** If you see "operation-not-allowed" error, it means Google provider is not enabled in Firebase Console. Follow step 5 above.
 
 ### Step 3: Get Firebase Configuration
 

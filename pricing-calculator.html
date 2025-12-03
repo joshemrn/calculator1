@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <style>
     html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
     
@@ -169,15 +171,46 @@
 
     <!-- Sign-In Required Screen -->
     <div id="sign-in-required" class="flex items-center justify-center py-20">
-      <div class="bg-white rounded-2xl shadow-xl p-12 max-w-md text-center">
+      <div class="bg-white rounded-2xl shadow-xl p-12 max-w-md w-full">
         <svg class="mx-auto mb-6 text-indigo-600" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 15v2m0 0v2m0-2h2m-2 0h-2m13-5c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <h2 class="text-2xl font-bold text-slate-800 mb-3">Sign In Required</h2>
-        <p class="text-slate-600 mb-8">Please sign in with your Google account to use the pricing calculator. Your calculations and preferences will be securely saved.</p>
+        <h2 class="text-2xl font-bold text-slate-800 mb-3 text-center">Sign In Required</h2>
+        <p class="text-slate-600 mb-8 text-center">Please sign in to use the pricing calculator. Your calculations and preferences will be securely saved.</p>
+        
+        <!-- Email/Password Sign In Form -->
+        <div id="email-auth-section">
+          <div class="mb-4">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+            <input type="email" id="auth-email" placeholder="your@email.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+            <input type="password" id="auth-password" placeholder="••••••••" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div id="auth-error" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-50 rounded-lg"></div>
+          <div id="auth-message" class="hidden text-green-600 text-sm mb-4 p-3 bg-green-50 rounded-lg"></div>
+          
+          <button id="sign-in-email-btn" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition mb-3">
+            Sign In
+          </button>
+          <button id="sign-up-email-btn" class="w-full bg-slate-200 text-slate-700 py-3 px-6 rounded-lg font-semibold hover:bg-slate-300 transition mb-4">
+            Create Account
+          </button>
+          
+          <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-slate-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-slate-500">Or continue with</span>
+            </div>
+          </div>
+        </div>
+        
         <div id="sign-in-button-main" class="flex justify-center"></div>
-        <p class="text-xs text-slate-500 mt-6">✓ Verified email required<br>✓ Data synced across devices<br>✓ Secure & private</p>
+        <p class="text-xs text-slate-500 mt-6 text-center">✓ Email verification required<br>✓ Data synced across devices<br>✓ Secure & private</p>
       </div>
     </div>
 
@@ -421,6 +454,20 @@
   </div>
 
   <script>
+    // Firebase Configuration - REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    
     // Google Sign-In Configuration
     const CLIENT_ID = '177744902464-nrlnvqafdvc2ftma22ib1a10pfrq9o3t.apps.googleusercontent.com';
     let currentUser = null;
@@ -446,6 +493,12 @@
     const userProfile = document.getElementById('user-profile');
     const userName = document.getElementById('user-name');
     const userPhoto = document.getElementById('user-photo');
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+    const signInEmailBtn = document.getElementById('sign-in-email-btn');
+    const signUpEmailBtn = document.getElementById('sign-up-email-btn');
+    const authError = document.getElementById('auth-error');
+    const authMessage = document.getElementById('auth-message');
     const marginInputs = {
       a: document.getElementById('margin-a'),
       b: document.getElementById('margin-b'),
@@ -467,6 +520,8 @@
     clearHistoryBtn.addEventListener('click', clearHistory);
     refreshRateBtn.addEventListener('click', fetchExchangeRate);
     signOutBtn.addEventListener('click', signOut);
+    signInEmailBtn.addEventListener('click', signInWithEmail);
+    signUpEmailBtn.addEventListener('click', signUpWithEmail);
     costInput.addEventListener('input', calculate);
     costInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') calculate();
@@ -477,6 +532,98 @@
     marginInputs.b.addEventListener('input', calculate);
     marginInputs.c.addEventListener('input', calculate);
     marginInputs.website.addEventListener('input', calculate);
+
+    // Firebase Auth State Observer
+    auth.onAuthStateChanged((user) => {
+      if (user && user.emailVerified) {
+        handleFirebaseUser(user);
+      } else if (user && !user.emailVerified) {
+        showError('Please verify your email address. Check your inbox for the verification link.');
+        auth.signOut();
+      }
+    });
+
+    // Email/Password Authentication Functions
+    async function signUpWithEmail() {
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+      
+      if (!email || !password) {
+        showError('Please enter both email and password');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+      
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.sendEmailVerification();
+        showMessage('Account created! Please check your email to verify your account before signing in.');
+        authEmail.value = '';
+        authPassword.value = '';
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    async function signInWithEmail() {
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+      
+      if (!email || !password) {
+        showError('Please enter both email and password');
+        return;
+      }
+      
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        if (!userCredential.user.emailVerified) {
+          showError('Please verify your email before signing in. Check your inbox for the verification link.');
+          await auth.signOut();
+          return;
+        }
+        
+        // User will be handled by onAuthStateChanged
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    function handleFirebaseUser(user) {
+      currentUser = {
+        id: user.uid,
+        name: user.displayName || user.email.split('@')[0],
+        email: user.email,
+        picture: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=4F46E5&color=fff`,
+        emailVerified: user.emailVerified
+      };
+      
+      userName.textContent = currentUser.name;
+      userPhoto.src = currentUser.picture;
+      document.getElementById('sign-in-button').classList.add('hidden');
+      userProfile.classList.remove('hidden');
+      userProfile.classList.add('flex');
+      document.getElementById('sign-in-required').classList.add('hidden');
+      document.getElementById('calculator-content').classList.remove('hidden');
+      
+      loadUserData();
+    }
+
+    function showError(message) {
+      authError.textContent = message;
+      authError.classList.remove('hidden');
+      authMessage.classList.add('hidden');
+    }
+
+    function showMessage(message) {
+      authMessage.textContent = message;
+      authMessage.classList.remove('hidden');
+      authError.classList.add('hidden');
+    }
 
     // Google Sign-In Functions
     function initializeGoogleSignIn() {
@@ -550,6 +697,9 @@
     }
 
     function signOut() {
+      // Sign out from Firebase
+      auth.signOut();
+      
       currentUser = null;
       document.getElementById('sign-in-button').classList.remove('hidden');
       userProfile.classList.add('hidden');

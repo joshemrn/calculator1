@@ -9,18 +9,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-// Set persistence to LOCAL (default behavior - user stays logged in)
-// This ensures users remain authenticated across browser sessions
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
-  console.error('Error setting persistence:', error);
-});
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(app);
 
 // Google Sign-In Configuration
 const CLIENT_ID = '177744902464-nrlnvqafdvc2ftma22ib1a10pfrq9o3t.apps.googleusercontent.com';
 let currentUser = null;
+
+console.log('Firebase Auth initialized, current user:', auth.currentUser);
 
 // DOM Elements
 const signOutBtn = document.getElementById('sign-out-btn');
@@ -105,7 +101,8 @@ function clearForgotPasswordErrors() {
 
 // Firebase Auth State Observer
 auth.onAuthStateChanged((user) => {
-  console.log('Auth state changed:', user ? user.email : 'No user');
+  console.log('Auth state changed:', user ? `${user.email} (verified: ${user.emailVerified})` : 'No user');
+  console.log('Auth persistence:', auth.persistence);
   
   if (user && user.emailVerified) {
     console.log('User is verified, showing content');
@@ -115,7 +112,7 @@ auth.onAuthStateChanged((user) => {
     showSignInError('Please verify your email address. Check your inbox for the verification link.');
     auth.signOut();
   } else {
-    console.log('No user signed in');
+    console.log('No user signed in, showing sign-in screen');
     // Show sign-in screen when no user is signed in
     const signInRequired = document.getElementById('sign-in-required');
     const calculatorContent = document.getElementById('calculator-content');
@@ -177,6 +174,10 @@ async function signInWithEmail() {
   }
   
   try {
+    // Set persistence BEFORE signing in
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    console.log('Persistence set to LOCAL');
+    
     const userCredential = await auth.signInWithEmailAndPassword(email, password);
     console.log('Sign in successful, checking verification...');
     
@@ -186,6 +187,7 @@ async function signInWithEmail() {
       return;
     }
     
+    console.log('User verified, authentication complete');
     // User will be handled by onAuthStateChanged
   } catch (error) {
     console.error('Sign in error:', error);

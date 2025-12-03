@@ -21,60 +21,128 @@ const signOutBtn = document.getElementById('sign-out-btn');
 const userProfile = document.getElementById('user-profile');
 const userName = document.getElementById('user-name');
 const userPhoto = document.getElementById('user-photo');
-const authEmail = document.getElementById('auth-email');
-const authPassword = document.getElementById('auth-password');
-const signInEmailBtn = document.getElementById('sign-in-email-btn');
-const signUpEmailBtn = document.getElementById('sign-up-email-btn');
-const authError = document.getElementById('auth-error');
-const authMessage = document.getElementById('auth-message');
+
+// Sign In Elements
+const signInEmail = document.getElementById('sign-in-email');
+const signInPassword = document.getElementById('sign-in-password');
+const signInBtn = document.getElementById('sign-in-btn');
+const signInError = document.getElementById('sign-in-error');
+const showSignUpLink = document.getElementById('show-sign-up');
+const showForgotPasswordLink = document.getElementById('show-forgot-password');
+
+// Sign Up Elements
+const signUpEmail = document.getElementById('sign-up-email');
+const signUpPassword = document.getElementById('sign-up-password');
+const signUpBtn = document.getElementById('sign-up-btn');
+const signUpError = document.getElementById('sign-up-error');
+const signUpMessage = document.getElementById('sign-up-message');
+const showSignInLink = document.getElementById('show-sign-in');
+
+// Forgot Password Elements
+const forgotPasswordEmail = document.getElementById('forgot-password-email');
+const resetPasswordBtn = document.getElementById('reset-password-btn');
+const forgotPasswordError = document.getElementById('forgot-password-error');
+const forgotPasswordMessage = document.getElementById('forgot-password-message');
+const backToSignInLink = document.getElementById('back-to-sign-in');
+
+// Section Elements
+const signInSection = document.getElementById('sign-in-section');
+const signUpSection = document.getElementById('sign-up-section');
+const forgotPasswordSection = document.getElementById('forgot-password-section');
 
 // Event Listeners
 if (signOutBtn) signOutBtn.addEventListener('click', signOut);
-if (signInEmailBtn) signInEmailBtn.addEventListener('click', signInWithEmail);
-if (signUpEmailBtn) signUpEmailBtn.addEventListener('click', signUpWithEmail);
+if (signInBtn) signInBtn.addEventListener('click', signInWithEmail);
+if (signUpBtn) signUpBtn.addEventListener('click', signUpWithEmail);
+if (resetPasswordBtn) resetPasswordBtn.addEventListener('click', resetPassword);
+if (showSignUpLink) showSignUpLink.addEventListener('click', () => showSection('sign-up'));
+if (showSignInLink) showSignInLink.addEventListener('click', () => showSection('sign-in'));
+if (showForgotPasswordLink) showForgotPasswordLink.addEventListener('click', () => showSection('forgot-password'));
+if (backToSignInLink) backToSignInLink.addEventListener('click', () => showSection('sign-in'));
+
+// Handle Enter key on password fields
+if (signInPassword) signInPassword.addEventListener('keypress', (e) => { if (e.key === 'Enter') signInWithEmail(); });
+if (signUpPassword) signUpPassword.addEventListener('keypress', (e) => { if (e.key === 'Enter') signUpWithEmail(); });
+if (forgotPasswordEmail) forgotPasswordEmail.addEventListener('keypress', (e) => { if (e.key === 'Enter') resetPassword(); });
+
+// Section Switching
+function showSection(section) {
+  if (signInSection) signInSection.classList.add('hidden');
+  if (signUpSection) signUpSection.classList.add('hidden');
+  if (forgotPasswordSection) forgotPasswordSection.classList.add('hidden');
+  
+  if (section === 'sign-in' && signInSection) {
+    signInSection.classList.remove('hidden');
+    clearSignInErrors();
+  } else if (section === 'sign-up' && signUpSection) {
+    signUpSection.classList.remove('hidden');
+    clearSignUpErrors();
+  } else if (section === 'forgot-password' && forgotPasswordSection) {
+    forgotPasswordSection.classList.remove('hidden');
+    clearForgotPasswordErrors();
+  }
+}
+
+function clearSignInErrors() {
+  if (signInError) signInError.classList.add('hidden');
+}
+
+function clearSignUpErrors() {
+  if (signUpError) signUpError.classList.add('hidden');
+  if (signUpMessage) signUpMessage.classList.add('hidden');
+}
+
+function clearForgotPasswordErrors() {
+  if (forgotPasswordError) forgotPasswordError.classList.add('hidden');
+  if (forgotPasswordMessage) forgotPasswordMessage.classList.add('hidden');
+}
 
 // Firebase Auth State Observer
 auth.onAuthStateChanged((user) => {
   if (user && user.emailVerified) {
     handleFirebaseUser(user);
   } else if (user && !user.emailVerified) {
-    showError('Please verify your email address. Check your inbox for the verification link.');
+    showSignInError('Please verify your email address. Check your inbox for the verification link.');
     auth.signOut();
   }
 });
 
 // Email/Password Authentication Functions
 async function signUpWithEmail() {
-  const email = authEmail.value.trim();
-  const password = authPassword.value;
+  if (!signUpEmail || !signUpPassword) return;
+  
+  const email = signUpEmail.value.trim();
+  const password = signUpPassword.value;
   
   if (!email || !password) {
-    showError('Please enter both email and password');
+    showSignUpError('Please enter both email and password');
     return;
   }
   
   if (password.length < 6) {
-    showError('Password must be at least 6 characters');
+    showSignUpError('Password must be at least 6 characters');
     return;
   }
   
   try {
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     await userCredential.user.sendEmailVerification();
-    showMessage('Account created! Please check your email to verify your account before signing in.');
-    authEmail.value = '';
-    authPassword.value = '';
+    showSignUpMessage('Account created! Please check your email to verify your account before signing in.');
+    signUpEmail.value = '';
+    signUpPassword.value = '';
   } catch (error) {
-    showError(error.message);
+    showSignUpError(error.message);
   }
 }
 
 async function signInWithEmail() {
-  const email = authEmail.value.trim();
-  const password = authPassword.value;
+  if (!signInEmail || !signInPassword) return;
+  
+  const email = signInEmail.value.trim();
+  const password = signInPassword.value;
   
   if (!email || !password) {
-    showError('Please enter both email and password');
+    showSignInError('Please enter both email and password');
     return;
   }
   
@@ -82,14 +150,33 @@ async function signInWithEmail() {
     const userCredential = await auth.signInWithEmailAndPassword(email, password);
     
     if (!userCredential.user.emailVerified) {
-      showError('Please verify your email before signing in. Check your inbox for the verification link.');
+      showSignInError('Please verify your email before signing in. Check your inbox for the verification link.');
       await auth.signOut();
       return;
     }
     
     // User will be handled by onAuthStateChanged
   } catch (error) {
-    showError(error.message);
+    showSignInError(error.message);
+  }
+}
+
+async function resetPassword() {
+  if (!forgotPasswordEmail) return;
+  
+  const email = forgotPasswordEmail.value.trim();
+  
+  if (!email) {
+    showForgotPasswordError('Please enter your email address');
+    return;
+  }
+  
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showForgotPasswordMessage('Password reset email sent! Please check your inbox.');
+    forgotPasswordEmail.value = '';
+  } catch (error) {
+    showForgotPasswordError(error.message);
   }
 }
 

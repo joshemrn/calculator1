@@ -225,7 +225,7 @@
                 <input 
                   type="number" 
                   id="margin-bcw" 
-                  value="10" 
+                  value="40" 
                   step="0.1" 
                   min="0" 
                   max="99.9"
@@ -524,7 +524,7 @@
 
       // Get custom margins
       const marginAPercent = parseFloat(marginA.value) || 30;
-      const marginBCWPercent = parseFloat(marginBCW.value) || 10;
+      const marginBCWPercent = parseFloat(marginBCW.value) || 40;
 
       // Excel Column F: Price A with custom margin from total cost
       // Formula: =C9 / (1 - margin%)
@@ -627,7 +627,7 @@
     function reset() {
       costInput.value = '';
       marginA.value = '30';
-      marginBCW.value = '10';
+      marginBCW.value = '40';
       resultsSection.classList.add('hidden');
       breakdownSection.classList.add('hidden');
       costError.classList.add('hidden');

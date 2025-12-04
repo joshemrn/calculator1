@@ -221,17 +221,18 @@
                 >
               </div>
               <div>
-                <label class="block text-xs font-medium text-slate-600 mb-2">Price B/C/Website Margin</label>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price B/C/Website Additional Margin</label>
                 <input 
                   type="number" 
                   id="margin-bcw" 
-                  value="40" 
+                  value="10" 
                   step="0.1" 
                   min="0" 
                   max="99.9"
                   class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  aria-label="Price B/C/Website margin percentage"
+                  aria-label="Price B/C/Website additional margin percentage"
                 >
+                <p class="text-xs text-slate-500 mt-1">Applied on top of Price A</p>
               </div>
             </div>
           </div>
@@ -509,12 +510,14 @@
 
       // Get custom margins
       const marginAPercent = parseFloat(marginA.value) || 30;
-      const marginBCWPercent = parseFloat(marginBCW.value) || 40;
+      const marginBCWPercent = parseFloat(marginBCW.value) || 10;
 
-      // Excel Column F: Price A with custom margin
+      // Excel Column F: Price A with custom margin from total cost
+      // Formula: =C9 / (1 - margin%)
       const priceA = totalCost / (1 - marginAPercent / 100);
       
-      // Excel Column G: Price B/C/Website with custom margin (from Price A)
+      // Excel Column G: Price B/C/Website - additional margin FROM Price A
+      // Formula: =F9 / (1 - BCW_margin%)  where BCW_margin is the ADDITIONAL margin
       const priceBCWebsite = priceA / (1 - marginBCWPercent / 100);
 
       // Display Results (always in CAD)
@@ -523,10 +526,10 @@
       document.getElementById('result-price-c').textContent = 'CAD $' + priceBCWebsite.toFixed(2);
       document.getElementById('result-website-price').textContent = 'CAD $' + priceBCWebsite.toFixed(2);
 
-      document.getElementById('result-margin-a').textContent = marginAPercent.toFixed(1) + '% margin';
-      document.getElementById('result-margin-b').textContent = marginBCWPercent.toFixed(1) + '% margin';
-      document.getElementById('result-margin-c').textContent = marginBCWPercent.toFixed(1) + '% margin';
-      document.getElementById('result-margin-website').textContent = marginBCWPercent.toFixed(1) + '% margin';
+      document.getElementById('result-margin-a').textContent = marginAPercent.toFixed(1) + '% margin (from cost)';
+      document.getElementById('result-margin-b').textContent = marginBCWPercent.toFixed(1) + '% additional margin';
+      document.getElementById('result-margin-c').textContent = marginBCWPercent.toFixed(1) + '% additional margin';
+      document.getElementById('result-margin-website').textContent = marginBCWPercent.toFixed(1) + '% additional margin';
 
       // Update Breakdown
       document.getElementById('breakdown-cost').textContent = 'CAD $' + costInCAD.toFixed(2);
@@ -610,7 +613,7 @@
     function reset() {
       costInput.value = '';
       marginA.value = '30';
-      marginBCW.value = '40';
+      marginBCW.value = '10';
       resultsSection.classList.add('hidden');
       breakdownSection.classList.add('hidden');
       costError.classList.add('hidden');

@@ -200,6 +200,42 @@
             </p>
           </div>
 
+          <!-- Margins Section -->
+          <div class="mb-8 p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <h3 class="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+              Custom Margins (%)
+              <div class="tooltip-icon" data-tooltip="Adjust profit margins for each pricing tier">?</div>
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price A Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-a" 
+                  value="30" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Price A margin percentage"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-2">Price B/C/Website Margin</label>
+                <input 
+                  type="number" 
+                  id="margin-bcw" 
+                  value="40" 
+                  step="0.1" 
+                  min="0" 
+                  max="99.9"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Price B/C/Website margin percentage"
+                >
+              </div>
+            </div>
+          </div>
+
           <!-- Buttons -->
           <div class="flex gap-4">
             <button 
@@ -329,6 +365,8 @@
     const resetBtn = document.getElementById('reset-btn');
     const exchangeRateDisplay = document.getElementById('exchange-rate-display');
     const rateStatus = document.getElementById('rate-status');
+    const marginA = document.getElementById('margin-a');
+    const marginBCW = document.getElementById('margin-bcw');
     
     console.log('Calculate button:', calculateBtn);
     const costError = document.getElementById('cost-error');
@@ -361,6 +399,8 @@
     
     // Auto-calculate on input
     costInput.addEventListener('input', calculate);
+    marginA.addEventListener('input', calculate);
+    marginBCW.addEventListener('input', calculate);
     costInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') calculate();
     });
@@ -467,17 +507,15 @@
         totalCost: totalCost
       };
 
-      // Excel Column D: =C9 / 80% (20% margin)
-      const price20Margin = totalCost / 0.80;
+      // Get custom margins
+      const marginAPercent = parseFloat(marginA.value) || 30;
+      const marginBCWPercent = parseFloat(marginBCW.value) || 40;
+
+      // Excel Column F: Price A with custom margin
+      const priceA = totalCost / (1 - marginAPercent / 100);
       
-      // Excel Column E: =C9 / 75% (25% margin)
-      const price25Margin = totalCost / 0.75;
-      
-      // Excel Column F: =C9 / 70% (30% margin - Price A)
-      const priceA = totalCost / 0.70;
-      
-      // Excel Column G: =F9 / 90% (40% margin from Price A - Price B/C/Website)
-      const priceBCWebsite = priceA / 0.90;
+      // Excel Column G: Price B/C/Website with custom margin (from Price A)
+      const priceBCWebsite = priceA / (1 - marginBCWPercent / 100);
 
       // Display Results (always in CAD)
       document.getElementById('result-price-a').textContent = 'CAD $' + priceA.toFixed(2);
@@ -485,10 +523,10 @@
       document.getElementById('result-price-c').textContent = 'CAD $' + priceBCWebsite.toFixed(2);
       document.getElementById('result-website-price').textContent = 'CAD $' + priceBCWebsite.toFixed(2);
 
-      document.getElementById('result-margin-a').textContent = '30% margin';
-      document.getElementById('result-margin-b').textContent = '40% margin';
-      document.getElementById('result-margin-c').textContent = '40% margin';
-      document.getElementById('result-margin-website').textContent = '40% margin';
+      document.getElementById('result-margin-a').textContent = marginAPercent.toFixed(1) + '% margin';
+      document.getElementById('result-margin-b').textContent = marginBCWPercent.toFixed(1) + '% margin';
+      document.getElementById('result-margin-c').textContent = marginBCWPercent.toFixed(1) + '% margin';
+      document.getElementById('result-margin-website').textContent = marginBCWPercent.toFixed(1) + '% margin';
 
       // Update Breakdown
       document.getElementById('breakdown-cost').textContent = 'CAD $' + costInCAD.toFixed(2);
@@ -571,6 +609,8 @@
     // Reset Form
     function reset() {
       costInput.value = '';
+      marginA.value = '30';
+      marginBCW.value = '40';
       resultsSection.classList.add('hidden');
       breakdownSection.classList.add('hidden');
       costError.classList.add('hidden');

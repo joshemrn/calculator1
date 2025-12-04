@@ -413,8 +413,14 @@
     resetBtn.addEventListener('click', reset);
     toggleBreakdownBtn.addEventListener('click', toggleBreakdown);
     clearHistoryBtn.addEventListener('click', clearHistory);
+    
+    // Auto-calculate on input
+    costInput.addEventListener('input', calculate);
     costInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') calculate();
+    });
+    Object.values(marginInputs).forEach(input => {
+      input.addEventListener('input', calculate);
     });
 
     // Set Currency
@@ -439,6 +445,7 @@
         currencyUsdBtn.setAttribute('aria-pressed', 'true');
       }
       
+      calculate(); // Auto-recalculate when currency changes
       costInput.focus();
     }
 

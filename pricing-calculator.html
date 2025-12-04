@@ -485,28 +485,42 @@
 
       // Excel Column A: Cost (USD or CAD input)
       let costInUSD;
+      let totalCost;
+      let shippingFee;
+      let shippingPercent;
       let breakdown = {};
       
       if (currentCurrency === 'USD') {
+        // USD: Convert to CAD and use 4% shipping
         costInUSD = cost;
+        const costInCAD = costInUSD * exchangeRate;
+        shippingPercent = 4;
+        shippingFee = costInCAD * 0.04;
+        totalCost = costInCAD + shippingFee;
+        
+        breakdown = {
+          costUSD: costInUSD,
+          costCAD: costInCAD,
+          shipping: shippingFee,
+          totalCost: totalCost,
+          shippingLabel: 'Shipping (4%)'
+        };
       } else {
-        // If they enter CAD, convert back to USD for calculation
+        // CAD: Use 3% shipping directly on CAD input
+        const costInCAD = cost;
         costInUSD = cost / exchangeRate;
+        shippingPercent = 3;
+        shippingFee = costInCAD * 0.03;
+        totalCost = costInCAD + shippingFee;
+        
+        breakdown = {
+          costUSD: costInUSD,
+          costCAD: costInCAD,
+          shipping: shippingFee,
+          totalCost: totalCost,
+          shippingLabel: 'Shipping (3%)'
+        };
       }
-
-      // Excel Column B: =A9 * 1.4 (Convert USD → CAD)
-      const costInCAD = costInUSD * exchangeRate;
-      
-      // Excel Column C: =B9 * 1.04 (Add 4% shipping)
-      const totalCost = costInCAD * 1.04;
-      const shippingFee = costInCAD * 0.04;
-      
-      breakdown = {
-        costUSD: costInUSD,
-        costCAD: costInCAD,
-        shipping: shippingFee,
-        totalCost: totalCost
-      };
 
       // Get custom margins
       const marginAPercent = parseFloat(marginA.value) || 30;
@@ -532,10 +546,10 @@
       document.getElementById('result-margin-website').textContent = marginBCWPercent.toFixed(1) + '% additional margin';
 
       // Update Breakdown
-      document.getElementById('breakdown-cost').textContent = 'CAD $' + costInCAD.toFixed(2);
-      document.getElementById('breakdown-label-1').textContent = 'Shipping (4%)';
-      document.getElementById('breakdown-fee-1').textContent = 'CAD $' + shippingFee.toFixed(2);
-      document.getElementById('breakdown-total').textContent = 'CAD $' + totalCost.toFixed(2);
+      document.getElementById('breakdown-cost').textContent = 'CAD $' + breakdown.costCAD.toFixed(2);
+      document.getElementById('breakdown-label-1').textContent = breakdown.shippingLabel;
+      document.getElementById('breakdown-fee-1').textContent = 'CAD $' + breakdown.shipping.toFixed(2);
+      document.getElementById('breakdown-total').textContent = 'CAD $' + breakdown.totalCost.toFixed(2);
 
       resultsSection.classList.remove('hidden');
       

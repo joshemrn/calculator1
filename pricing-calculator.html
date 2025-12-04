@@ -374,6 +374,8 @@
   </div>
 
   <script>
+    console.log('Pricing calculator script loaded');
+    
     // DOM Elements
     const costInput = document.getElementById('cost-input');
     const currencyCadBtn = document.getElementById('currency-cad');
@@ -381,6 +383,8 @@
     const currencySymbol = document.getElementById('currency-symbol');
     const calculateBtn = document.getElementById('calculate-btn');
     const resetBtn = document.getElementById('reset-btn');
+    
+    console.log('Calculate button:', calculateBtn);
     const costError = document.getElementById('cost-error');
     const resultsSection = document.getElementById('results-section');
     const toggleBreakdownBtn = document.getElementById('toggle-breakdown');
@@ -402,7 +406,10 @@
     // Event Listeners
     currencyCadBtn.addEventListener('click', () => setCurrency('CAD'));
     currencyUsdBtn.addEventListener('click', () => setCurrency('USD'));
-    calculateBtn.addEventListener('click', calculate);
+    calculateBtn.addEventListener('click', () => {
+      console.log('Calculate button clicked!');
+      calculate();
+    });
     resetBtn.addEventListener('click', reset);
     toggleBreakdownBtn.addEventListener('click', toggleBreakdown);
     clearHistoryBtn.addEventListener('click', clearHistory);
@@ -458,6 +465,9 @@
 
     // Calculate Pricing
     function calculate() {
+      console.log('Calculate function called');
+      console.log('Cost input value:', costInput.value);
+      
       costError.classList.add('hidden');
       
       const cost = parseFloat(costInput.value);

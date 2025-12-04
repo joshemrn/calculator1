@@ -529,9 +529,12 @@
       // Formula: =TotalCost / (1 - margin%)
       const priceA = totalCost / (1 - marginAPercent / 100);
       
-      // Price B/C/Website with custom margin from total cost (NOT from Price A)
-      // Formula: =TotalCost / (1 - BCW_margin%)
-      const priceBCWebsite = totalCost / (1 - marginBCWPercent / 100);
+      // Price B/C/Website: First apply Price A margin, then apply BCW margin on top
+      // Step 1: Price A already has 30% margin
+      // Step 2: Apply additional markup for BCW margin
+      // If we want 40% total margin: Price B = Price A / (1 - ((40 - 30) / 100))
+      const additionalMargin = (marginBCWPercent - marginAPercent) / 100;
+      const priceBCWebsite = priceA / (1 - additionalMargin);
 
       // Display Results (always in CAD)
       document.getElementById('result-price-a').textContent = 'CAD $' + priceA.toFixed(2);

@@ -8,9 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <style>
     html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
     
@@ -141,135 +138,21 @@
   <div class="w-full max-w-5xl mx-auto px-4">
     <!-- Header -->
     <header class="mb-8">
-      <div class="flex justify-between items-start mb-4">
-        <a href="index.html" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18l-6-6 6-6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Home
-        </a>
-        
-        <!-- User Profile / Sign In -->
-        <div id="user-section">
-          <!-- Sign In Button (shown when not logged in) -->
-          <div id="sign-in-button"></div>
-          
-          <!-- User Profile (shown when logged in) -->
-          <div id="user-profile" class="hidden flex items-center gap-3">
-            <img id="user-photo" class="w-10 h-10 rounded-full border-2 border-indigo-200" alt="User photo">
-            <div>
-              <div id="user-name" class="text-sm font-semibold text-slate-800"></div>
-              <button id="sign-out-btn" class="text-xs text-indigo-600 hover:underline">Sign Out</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" stroke="#4F46E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
       <h1 class="text-4xl font-bold text-slate-800">Pricing Formula Calculator</h1>
       <p class="text-slate-600 mt-2">Calculate product pricing with CAD/USD support, custom margins, and detailed breakdowns. <span class="text-xs text-slate-500">Based on Pricing Formula.xlsx</span></p>
     </header>
 
-    <!-- Sign-In Required Screen -->
-    <div id="sign-in-required" class="flex items-center justify-center py-20">
-      <div class="bg-white rounded-2xl shadow-xl p-12 max-w-md w-full">
-        <svg class="mx-auto mb-6 text-indigo-600" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 15v2m0 0v2m0-2h2m-2 0h-2m13-5c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        
-        <!-- Sign In Section -->
-        <div id="sign-in-section">
-          <h2 class="text-2xl font-bold text-slate-800 mb-3 text-center">Sign In</h2>
-          <p class="text-slate-600 mb-8 text-center">Welcome back! Sign in to access your saved calculations.</p>
-          
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-            <input type="email" id="sign-in-email" placeholder="your@email.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-            <input type="password" id="sign-in-password" placeholder="••••••••" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div id="sign-in-error" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-50 rounded-lg"></div>
-          
-          <button id="sign-in-btn" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition mb-3">
-            Sign In
-          </button>
-          
-          <div class="flex justify-between text-sm mb-4">
-            <a href="#" id="show-forgot-password" class="text-indigo-600 hover:underline">Forgot password?</a>
-            <a href="#" id="show-sign-up" class="text-indigo-600 hover:underline">Create account</a>
-          </div>
-          
-          <div class="relative my-6">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-slate-300"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-white text-slate-500">Or continue with</span>
-            </div>
-          </div>
-          
-          <div id="sign-in-button-main" class="flex justify-center"></div>
-        </div>
-        
-        <!-- Sign Up Section -->
-        <div id="sign-up-section" class="hidden">
-          <h2 class="text-2xl font-bold text-slate-800 mb-3 text-center">Create Account</h2>
-          <p class="text-slate-600 mb-8 text-center">Get started with a free account. Email verification required.</p>
-          
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-            <input type="email" id="sign-up-email" placeholder="your@email.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-            <input type="password" id="sign-up-password" placeholder="••••••••" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <p class="text-xs text-slate-500 mt-1">Minimum 6 characters</p>
-          </div>
-          <div id="sign-up-error" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-50 rounded-lg"></div>
-          <div id="sign-up-message" class="hidden text-green-600 text-sm mb-4 p-3 bg-green-50 rounded-lg"></div>
-          
-          <button id="sign-up-btn" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition mb-3">
-            Create Account
-          </button>
-          
-          <div class="text-center text-sm">
-            <span class="text-slate-600">Already have an account?</span>
-            <a href="#" id="show-sign-in" class="text-indigo-600 hover:underline ml-1">Sign in</a>
-          </div>
-        </div>
-        
-        <!-- Forgot Password Section -->
-        <div id="forgot-password-section" class="hidden">
-          <h2 class="text-2xl font-bold text-slate-800 mb-3 text-center">Reset Password</h2>
-          <p class="text-slate-600 mb-8 text-center">Enter your email and we'll send you a password reset link.</p>
-          
-          <div class="mb-4">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-            <input type="email" id="forgot-password-email" placeholder="your@email.com" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div id="forgot-password-error" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-50 rounded-lg"></div>
-          <div id="forgot-password-message" class="hidden text-green-600 text-sm mb-4 p-3 bg-green-50 rounded-lg"></div>
-          
-          <button id="reset-password-btn" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition mb-3">
-            Send Reset Link
-          </button>
-          
-          <div class="text-center text-sm">
-            <a href="#" id="back-to-sign-in" class="text-indigo-600 hover:underline">← Back to sign in</a>
-          </div>
-        </div>
-        
-        <p class="text-xs text-slate-500 mt-6 text-center">✓ Email verification required<br>✓ Data synced across devices<br>✓ Secure & private</p>
-      </div>
-    </div>
-
     <!-- Main Grid -->
-    <div id="calculator-content" class="grid gap-8 lg:grid-cols-2 hidden">
+    <div class="grid gap-8 lg:grid-cols-3">
       
       <!-- Input Section -->
-      <div>
+      <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-lg p-8">
           
           <!-- Currency Selector -->
@@ -284,20 +167,6 @@
                 <span class="currency-badge usd">USD</span>
                 United States
               </button>
-            </div>
-            
-            <!-- Exchange Rate Display (shown only for USD) -->
-            <div id="exchange-rate-display" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div class="flex items-center justify-between">
-                <div class="text-sm">
-                  <span class="font-semibold text-green-800">Exchange Rate:</span>
-                  <span class="text-green-900 ml-2">1 USD = <span id="exchange-rate-value">1.4000</span> CAD</span>
-                </div>
-                <button id="refresh-rate-btn" class="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                  Refresh
-                </button>
-              </div>
-              <div class="text-xs text-green-600 mt-1" id="rate-timestamp">Last updated: --</div>
             </div>
           </div>
 
@@ -350,7 +219,7 @@
                 <input 
                   type="number" 
                   id="margin-b" 
-                  value="40" 
+                  value="25" 
                   step="0.1" 
                   min="0" 
                   max="99.9"
@@ -363,7 +232,7 @@
                 <input 
                   type="number" 
                   id="margin-c" 
-                  value="40" 
+                  value="20" 
                   step="0.1" 
                   min="0" 
                   max="99.9"
@@ -376,7 +245,7 @@
                 <input 
                   type="number" 
                   id="margin-website" 
-                  value="40" 
+                  value="37" 
                   step="0.1" 
                   min="0" 
                   max="99.9"
@@ -411,7 +280,7 @@
       </div>
 
       <!-- Results & History Section -->
-      <div>
+      <div class="lg:col-span-1">
         
         <!-- Results Card -->
         <div id="results-section" class="bg-white rounded-2xl shadow-lg p-8 hidden">
@@ -424,18 +293,11 @@
             <div class="text-xs text-slate-500 mt-2" id="result-margin-a">30% margin</div>
           </div>
 
-          <!-- Website Price -->
-          <div class="result-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fcd34d;">
-            <div class="result-label" style="color: #92400e;">price b, c, website</div>
-            <div class="result-value" style="color: #b45309;" id="result-website-price">$0.00</div>
-            <div class="text-xs" style="color: #ca8a04; margin-top: 2px;" id="result-margin-website">40% margin</div>
-          </div>
-
-          <!-- Price B -->
-          <div class="result-card" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border: 2px solid #0284c7; box-shadow: 0 8px 16px rgba(2, 132, 199, 0.2);">
-            <div class="result-label" style="color: #0284c7; font-weight: 600;">25% margin</div>
-            <div class="result-value" style="color: #0284c7; font-size: 28px;" id="result-price-b">$0.00</div>
-            <div class="text-xs text-slate-500 mt-2" id="result-margin-b">25% margin</div>
+          <!-- Price C -->
+          <div class="result-card">
+            <div class="result-label">20% margin</div>
+            <div class="result-value" id="result-price-c">$0.00</div>
+            <div class="text-xs text-slate-500 mt-2" id="result-margin-c">20% margin</div>
           </div>
 
           <!-- Price C -->
@@ -443,6 +305,13 @@
             <div class="result-label">20% margin</div>
             <div class="result-value" id="result-price-c">$0.00</div>
             <div class="text-xs text-slate-500 mt-2" id="result-margin-c">20% margin</div>
+          </div>
+
+          <!-- Website Price -->
+          <div class="result-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #fcd34d;">
+            <div class="result-label" style="color: #92400e;">price b, c, website</div>
+            <div class="result-value" style="color: #b45309;" id="result-website-price">$0.00</div>
+            <div class="text-xs" style="color: #ca8a04; margin-top: 2px;" id="result-margin-website">37% margin</div>
           </div>
 
           <!-- Breakdown Toggle -->
@@ -504,9 +373,6 @@
 
   </div>
 
-  <!-- Global Authentication Script -->
-  <script src="./auth.js?v=5"></script>
-  
   <script>
     // DOM Elements
     const costInput = document.getElementById('cost-input');
@@ -521,10 +387,6 @@
     const breakdownSection = document.getElementById('breakdown-section');
     const historyList = document.getElementById('history-list');
     const clearHistoryBtn = document.getElementById('clear-history-btn');
-    const exchangeRateDisplay = document.getElementById('exchange-rate-display');
-    const exchangeRateValue = document.getElementById('exchange-rate-value');
-    const rateTimestamp = document.getElementById('rate-timestamp');
-    const refreshRateBtn = document.getElementById('refresh-rate-btn');
     const marginInputs = {
       a: document.getElementById('margin-a'),
       b: document.getElementById('margin-b'),
@@ -544,63 +406,10 @@
     resetBtn.addEventListener('click', reset);
     toggleBreakdownBtn.addEventListener('click', toggleBreakdown);
     clearHistoryBtn.addEventListener('click', clearHistory);
-    refreshRateBtn.addEventListener('click', fetchExchangeRate);
-    costInput.addEventListener('input', calculate);
     costInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') calculate();
     });
-    
-    // Auto-calculate when margins change
-    marginInputs.a.addEventListener('input', calculate);
-    marginInputs.b.addEventListener('input', calculate);
-    marginInputs.c.addEventListener('input', calculate);
-    marginInputs.website.addEventListener('input', calculate);
 
-    // Load user data when authenticated (called from auth.js)
-    function onUserAuthenticated(user) {
-      loadUserData();
-    }
-
-    function loadUserData() {
-      // Load user's saved data from localStorage with user ID prefix
-      const userKey = `pricing_${currentUser.id}`;
-      const userData = localStorage.getItem(userKey);
-      
-      if (userData) {
-        const data = JSON.parse(userData);
-        calculations = data.history || [];
-        
-        // Load saved preferences
-        if (data.preferences) {
-          marginInputs.a.value = data.preferences.marginA || '30';
-          marginInputs.b.value = data.preferences.marginB || '40';
-          marginInputs.c.value = data.preferences.marginC || '40';
-          marginInputs.website.value = data.preferences.marginWebsite || '40';
-          currentCurrency = data.preferences.currency || 'CAD';
-          setCurrency(currentCurrency);
-        }
-        
-        renderHistory();
-      }
-    }
-
-    function saveUserData() {
-      if (currentUser) {
-        const userKey = `pricing_${currentUser.id}`;
-        const userData = {
-          history: calculations,
-          preferences: {
-            marginA: marginInputs.a.value,
-            marginB: marginInputs.b.value,
-            marginC: marginInputs.c.value,
-            marginWebsite: marginInputs.website.value,
-            currency: currentCurrency
-          }
-        };
-        localStorage.setItem(userKey, JSON.stringify(userData));
-      }
-    }
-    
     // Set Currency
     function setCurrency(currency) {
       currentCurrency = currency;
@@ -613,7 +422,6 @@
         currencySymbol.textContent = '$';
         currencyCadBtn.setAttribute('aria-pressed', 'true');
         currencyUsdBtn.setAttribute('aria-pressed', 'false');
-        exchangeRateDisplay.classList.add('hidden');
       } else {
         currencyCadBtn.classList.add('border-gray-300', 'bg-white', 'text-slate-600');
         currencyCadBtn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
@@ -622,15 +430,9 @@
         currencySymbol.textContent = 'US$';
         currencyCadBtn.setAttribute('aria-pressed', 'false');
         currencyUsdBtn.setAttribute('aria-pressed', 'true');
-        exchangeRateDisplay.classList.remove('hidden');
       }
       
       costInput.focus();
-      
-      // Auto-calculate if there's a value
-      if (costInput.value) {
-        calculate();
-      }
     }
 
     // Exchange Rate Functions
@@ -641,11 +443,6 @@
         if (data && data.rates && data.rates.CAD) {
           exchangeRate = parseFloat(data.rates.CAD);
           localStorage.setItem('pricing_exchange_rate', exchangeRate);
-          const now = new Date();
-          localStorage.setItem('pricing_exchange_time', now.toISOString());
-          // Update UI
-          exchangeRateValue.textContent = exchangeRate.toFixed(4);
-          rateTimestamp.textContent = `Last updated: ${now.toLocaleTimeString()}`;
         }
       } catch (err) {
         console.error('Exchange rate fetch failed:', err);
@@ -654,24 +451,16 @@
 
     function loadExchangeRate() {
       const cached = localStorage.getItem('pricing_exchange_rate');
-      const cachedTime = localStorage.getItem('pricing_exchange_time');
       if (cached) {
         exchangeRate = parseFloat(cached);
-        exchangeRateValue.textContent = exchangeRate.toFixed(4);
-        if (cachedTime) {
-          const date = new Date(cachedTime);
-          rateTimestamp.textContent = `Last updated: ${date.toLocaleTimeString()}`;
-        }
       }
     }
 
     // Calculate Pricing
     function calculate() {
-      console.log('Calculate function called');
       costError.classList.add('hidden');
       
       const cost = parseFloat(costInput.value);
-      console.log('Cost value:', cost);
       
       if (isNaN(cost) || cost < 0) {
         costError.classList.remove('hidden');
@@ -720,7 +509,7 @@
       const priceA = totalCost / (1 - margins.a);
       const priceB = totalCost / (1 - margins.b);
       const priceC = totalCost / (1 - margins.c);
-      const websitePrice = priceA / 0.90;  // Price A divided by 90% for additional margin
+      const websitePrice = totalCost / (1 - margins.website);
 
       // Display Results (always in CAD)
       document.getElementById('result-price-a').textContent = 'CAD $' + priceA.toFixed(2);
@@ -759,14 +548,7 @@
     function saveToHistory(calc) {
       calculations.unshift(calc);
       if (calculations.length > 20) calculations.pop();
-      
-      // Save to user-specific storage if signed in, otherwise local storage
-      if (currentUser) {
-        saveUserData();
-      } else {
-        localStorage.setItem('pricingHistory', JSON.stringify(calculations));
-      }
-      
+      localStorage.setItem('pricingHistory', JSON.stringify(calculations));
       renderHistory();
     }
 
@@ -802,13 +584,7 @@
     function clearHistory() {
       if (confirm('Are you sure you want to clear all history?')) {
         calculations = [];
-        
-        if (currentUser) {
-          saveUserData();
-        } else {
-          localStorage.removeItem('pricingHistory');
-        }
-        
+        localStorage.removeItem('pricingHistory');
         renderHistory();
       }
     }
@@ -829,9 +605,9 @@
     function reset() {
       costInput.value = '';
       marginInputs.a.value = '30';
-      marginInputs.b.value = '40';
-      marginInputs.c.value = '40';
-      marginInputs.website.value = '40';
+      marginInputs.b.value = '25';
+      marginInputs.c.value = '20';
+      marginInputs.website.value = '37';
       resultsSection.classList.add('hidden');
       breakdownSection.classList.add('hidden');
       costError.classList.add('hidden');
@@ -840,14 +616,11 @@
 
     // Format Currency
     function formatCurrency(value) {
-      return 'CAD $' + value.toFixed(2);
+      const symbol = currentCurrency === 'CAD' ? '$' : 'US$';
+      return symbol + value.toFixed(2);
     }
 
     // Initialize
-    window.onload = function() {
-      initializeGoogleSignIn();
-    };
-    
     loadExchangeRate();
     fetchExchangeRate(); // Fetch fresh rate on page load
     renderHistory();
